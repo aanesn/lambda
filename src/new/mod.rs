@@ -17,8 +17,11 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     let rcfg = utils::rcfg();
 
     let loc = match &nargs.location {
-        Some(loc) => loc.clone(),
-        None => location::prompt(&rcfg)?,
+        Some(loc) => {
+            location::check_loc(loc)?;
+            loc.clone()
+        }
+        None => location::prompt(&rcfg)?, // checks loc internally
     };
 
     let fw = match &nargs.framework {
