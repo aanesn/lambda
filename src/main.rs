@@ -1,9 +1,10 @@
 mod cli;
 mod new;
+mod utils;
 
 fn main() {
     if let Err(e) = cli::run() {
-        eprintln!("error: {}", e);
+        utils::log_err(e);
         std::process::exit(1);
     }
 }

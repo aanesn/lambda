@@ -1,5 +1,8 @@
+use crate::utils;
 use clap::Parser;
 use std::path::PathBuf;
+
+mod location;
 
 #[derive(Parser)]
 pub struct NewArgs {
@@ -7,6 +10,12 @@ pub struct NewArgs {
 }
 
 pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
-    println!("creating new project at: {:?}", nargs.location);
+    let rcfg = utils::rcfg();
+
+    let loc = match &nargs.location {
+        Some(loc) => loc.clone(),
+        None => location::prompt(&rcfg)?,
+    };
+
     Ok(())
 }
