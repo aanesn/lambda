@@ -7,11 +7,6 @@ pub enum Framework {
     Actix,
     Rocket,
     Warp,
-    Flask,
-    Django,
-    FastApi,
-    Express,
-    Fastify,
 }
 
 impl Display for Framework {
@@ -21,11 +16,6 @@ impl Display for Framework {
             Framework::Actix => write!(f, "actix"),
             Framework::Rocket => write!(f, "rocket"),
             Framework::Warp => write!(f, "warp"),
-            Framework::Flask => write!(f, "flask"),
-            Framework::Django => write!(f, "django"),
-            Framework::FastApi => write!(f, "fastapi"),
-            Framework::Express => write!(f, "express"),
-            Framework::Fastify => write!(f, "fastify"),
         }
     }
 }
@@ -38,11 +28,6 @@ impl FromStr for Framework {
             "actix" => Ok(Framework::Actix),
             "rocket" => Ok(Framework::Rocket),
             "warp" => Ok(Framework::Warp),
-            "flask" => Ok(Framework::Flask),
-            "django" => Ok(Framework::Django),
-            "fastapi" => Ok(Framework::FastApi),
-            "express" => Ok(Framework::Express),
-            "fastify" => Ok(Framework::Fastify),
             _ => anyhow::bail!("{} is an unsupported framework", s),
         }
     }
@@ -54,11 +39,6 @@ impl Framework {
         Framework::Actix,
         Framework::Rocket,
         Framework::Warp,
-        Framework::Flask,
-        Framework::Django,
-        Framework::FastApi,
-        Framework::Express,
-        Framework::Fastify,
     ];
 }
 
