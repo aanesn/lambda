@@ -24,6 +24,13 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
         None => location::prompt(&rcfg)?, // checks loc internally
     };
 
+    if loc.exists() {
+        anyhow::bail!(
+            "`{}` already exists, use `lambda init` to initialize the directory",
+            loc.display()
+        );
+    }
+
     let fw = match &nargs.framework {
         Some(fw) => fw.clone(),
         None => framework::prompt(&rcfg)?,

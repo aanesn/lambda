@@ -1,7 +1,7 @@
 use inquire::{Text, ui::RenderConfig, validator::Validation};
 use std::path::PathBuf;
 
-const DEFAULT_LOCATION: &str = "./";
+const DEFAULT_LOCATION: &str = "./lambda";
 
 pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<PathBuf> {
     let text = Text::new("location")
@@ -29,7 +29,7 @@ pub fn check_loc(loc: &PathBuf) -> anyhow::Result<()> {
     }
 
     if loc.is_file() {
-        anyhow::bail!("`{}` is a file that already exist", loc.display())
+        anyhow::bail!("`{}` is a file that already exists", loc.display());
     }
 
     Ok(())
