@@ -8,3 +8,4 @@ anyhow = "1.0.98"
 clap = { version = "4.5.42", features = ["derive"] }
 crossterm = "0.29.0"
 inquire = "0.7.5"
+unicode-xid = "0.2.6"

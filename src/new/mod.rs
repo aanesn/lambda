@@ -11,6 +11,9 @@ pub struct NewArgs {
 
     #[arg(long, alias = "fw")]
     framework: Option<Framework>,
+
+    #[arg(long)]
+    name: Option<String>,
 }
 
 pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
@@ -30,6 +33,12 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
             loc.display()
         );
     }
+
+    let name = match &nargs.name {
+        Some(name) => name.clone(),
+        None => location::get_name(&loc)?,
+    };
+    location::check_name(&name)?;
 
     let fw = match &nargs.framework {
         Some(fw) => fw.clone(),
