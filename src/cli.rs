@@ -1,4 +1,5 @@
 use crate::commands::{
+    build::{BuildArgs, build},
     init::{InitArgs, init},
     new::{NewArgs, new},
 };
@@ -17,6 +18,8 @@ enum Command {
     New(NewArgs),
     #[command(about = "scaffold a new lambda in the current directory")]
     Init(InitArgs),
+    #[command(about = "compile and package lambda")]
+    Build(BuildArgs),
 }
 
 pub fn run() -> anyhow::Result<()> {
@@ -25,6 +28,7 @@ pub fn run() -> anyhow::Result<()> {
     match &cli.command {
         Command::New(nargs) => new(nargs)?,
         Command::Init(iargs) => init(iargs)?,
+        Command::Build(bargs) => build(bargs)?,
     }
 
     Ok(())
