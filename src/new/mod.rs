@@ -1,6 +1,5 @@
 use crate::{new::framework::Framework, utils};
 use clap::Parser;
-use indicatif::HumanDuration;
 use std::path::PathBuf;
 
 mod framework;
@@ -49,7 +48,7 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
 
     let pb = utils::spinner();
     pb.set_message("scaffolding...");
-    template::scaffold()?;
+    template::scaffold(&loc, &name, &fw)?;
     pb.finish_and_clear();
     utils::log_info(&format!("scaffolded in {:.1}s", pb.elapsed().as_secs_f32()));
 
