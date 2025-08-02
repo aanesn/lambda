@@ -1,5 +1,5 @@
 use inquire::{Select, ui::RenderConfig};
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, path::PathBuf, str::FromStr};
 
 #[derive(Clone)]
 pub enum Language {
@@ -43,4 +43,14 @@ pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<Language> {
         .with_render_config(*rcfg)
         .prompt()?;
     Ok(lang)
+}
+
+pub fn detect(cwd: &PathBuf) -> anyhow::Result<Language> {
+    if cwd.join("Cargo.toml").exists() {
+        return Ok(Language::Rust);
+    }
+    if cwd.join("go.mod").exists() {
+        return Ok(Language::Rust);
+    }
+    anyhow::bail!("failed to auto-detect language, use --language to override")
 }
