@@ -1,5 +1,5 @@
 use crate::language::Language;
-use std::{fmt::Display, path::PathBuf, str::FromStr};
+use std::{fmt::Display, str::FromStr};
 
 #[derive(Clone)]
 pub enum Compiler {
