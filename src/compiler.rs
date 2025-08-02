@@ -41,11 +41,4 @@ impl Compiler {
             Compiler::Go => "go run .",
         }
     }
-
-    pub fn manifest(&self) -> &str {
-        match self {
-            Compiler::Cargo => "Cargo.toml",
-            Compiler::Go => "go.mod",
-        }
-    }
 }

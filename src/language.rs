@@ -29,6 +29,13 @@ impl FromStr for Language {
 
 impl Language {
     pub const ALL: &[Self] = &[Language::Rust, Language::Go];
+
+    pub fn manifest(&self) -> &str {
+        match self {
+            Language::Rust => "Cargo.toml",
+            Language::Go => "go.mod",
+        }
+    }
 }
 
 pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<Language> {

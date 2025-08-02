@@ -44,18 +44,18 @@ pub fn init(iargs: &InitArgs) -> anyhow::Result<()> {
         None => language::prompt(&rcfg)?,
     };
 
-    let comp = match &iargs.compiler {
-        Some(comp) => comp.clone(),
-        None => Compiler::from_lang(&lang),
-    };
-
-    let manifest = comp.manifest();
+    let manifest = lang.manifest();
     if loc.join(manifest).exists() {
         anyhow::bail!(
             "`lambda init` cannot be run in a directory with an existing `{}` manifest",
             manifest
         )
     }
+
+    let comp = match &iargs.compiler {
+        Some(comp) => comp.clone(),
+        None => Compiler::from_lang(&lang),
+    };
 
     let fw = match &iargs.framework {
         Some(fw) => fw.clone(),
