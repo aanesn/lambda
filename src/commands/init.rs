@@ -1,4 +1,5 @@
 use crate::{
+    compiler::Compiler,
     framework::{self, Framework},
     language::{self, Language},
     location, template, utils,
@@ -12,6 +13,9 @@ pub struct InitArgs {
 
     #[arg(long, alias = "lang")]
     language: Option<Language>,
+
+    #[arg(long, alias = "comp")]
+    compiler: Option<Compiler>,
 
     #[arg(long, alias = "fw")]
     framework: Option<Framework>,
@@ -40,6 +44,11 @@ pub fn init(iargs: &InitArgs) -> anyhow::Result<()> {
         None => language::prompt(&rcfg)?,
     };
 
+    let comp = match &iargs.compiler {
+        Some(comp) => comp.clone(),
+        None => Compiler::from_lang(&lang),
+    };
+
     let fw = match &iargs.framework {
         Some(fw) => fw.clone(),
         None => framework::prompt(&rcfg, &lang)?,
@@ -50,6 +59,12 @@ pub fn init(iargs: &InitArgs) -> anyhow::Result<()> {
     template::scaffold(&loc, &name, &lang, &fw)?;
     pb.finish_and_clear();
     utils::log_info(&format!("scaffolded in {:.1}ms", utils::ms(&pb.elapsed())));
+
+    utils::log_info(&format!(
+        "run server: `cd {} && {}`",
+        loc.display(),
+        comp.run_cmd()
+    ));
 
     Ok(())
 }

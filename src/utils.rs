@@ -36,6 +36,7 @@ pub fn log_err(e: anyhow::Error) {
 }
 
 pub fn log_info(msg: &str) {
+    println!();
     println!("{} {}", "λ".dark_magenta(), msg);
 }
 

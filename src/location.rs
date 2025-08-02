@@ -2,7 +2,7 @@ use inquire::{Text, ui::RenderConfig, validator::Validation};
 use std::path::PathBuf;
 use unicode_xid::UnicodeXID;
 
-const DEFAULT_LOCATION: &str = "./lambda";
+const DEFAULT_LOCATION: &str = "lambda";
 const MAX_NAME_LEN: usize = 214;
 
 pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<PathBuf> {

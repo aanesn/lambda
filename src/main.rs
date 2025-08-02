@@ -1,5 +1,6 @@
 mod cli;
 mod commands;
+mod compiler;
 mod framework;
 mod language;
 mod location;
