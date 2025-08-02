@@ -1,5 +1,6 @@
 use crate::{
     framework::{self, Framework},
+    language::{self, Language},
     location, template, utils,
 };
 use clap::Parser;
@@ -8,6 +9,9 @@ use std::path::PathBuf;
 #[derive(Parser)]
 pub struct NewArgs {
     location: Option<PathBuf>,
+
+    #[arg(long, alias = "lang")]
+    language: Option<Language>,
 
     #[arg(long, alias = "fw")]
     framework: Option<Framework>,
@@ -40,14 +44,19 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     };
     location::check_name(&name)?;
 
+    let lang = match &nargs.language {
+        Some(lang) => lang.clone(),
+        None => language::prompt(&rcfg)?,
+    };
+
     let fw = match &nargs.framework {
         Some(fw) => fw.clone(),
-        None => framework::prompt(&rcfg)?,
+        None => framework::prompt(&rcfg, &lang)?,
     };
 
     let pb = utils::spinner();
     pb.set_message("scaffolding...");
-    template::scaffold(&loc, &name, &fw)?;
+    template::scaffold(&loc, &name, &lang, &fw)?;
     pb.finish_and_clear();
     utils::log_info(&format!("scaffolded in {:.1}ms", utils::ms(&pb.elapsed())));
 

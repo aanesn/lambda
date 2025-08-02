@@ -1,14 +1,14 @@
-use crate::framework::Framework;
+use crate::{framework::Framework, language::Language};
 use std::path::PathBuf;
 
 #[derive(rust_embed::Embed)]
 #[folder = "templates"]
 struct Templates;
 
-pub fn scaffold(loc: &PathBuf, name: &str, fw: &Framework) -> anyhow::Result<()> {
+pub fn scaffold(loc: &PathBuf, name: &str, lang: &Language, fw: &Framework) -> anyhow::Result<()> {
     std::fs::create_dir_all(loc)?;
 
-    let prefix = format!("{}/", fw);
+    let prefix = format!("{}/{}/", lang, fw);
 
     for file in Templates::iter().filter(|f| f.starts_with(&prefix)) {
         let path = {
