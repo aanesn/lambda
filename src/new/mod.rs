@@ -1,9 +1,11 @@
 use crate::{new::framework::Framework, utils};
 use clap::Parser;
+use indicatif::HumanDuration;
 use std::path::PathBuf;
 
 mod framework;
 mod location;
+mod template;
 
 #[derive(Parser)]
 pub struct NewArgs {
@@ -44,6 +46,12 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
         Some(fw) => fw.clone(),
         None => framework::prompt(&rcfg)?,
     };
+
+    let pb = utils::spinner();
+    pb.set_message("scaffolding...");
+    template::scaffold()?;
+    pb.finish_and_clear();
+    utils::log_info(&format!("scaffolded in {:.1}s", pb.elapsed().as_secs_f32()));
 
     Ok(())
 }
