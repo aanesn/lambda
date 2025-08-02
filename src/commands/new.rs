@@ -67,13 +67,12 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     pb.set_message("scaffolding...");
     template::scaffold(&loc, &name, &lang, &fw)?;
     pb.finish_and_clear();
-    utils::log_info(&format!("scaffolded in {:.1}ms", utils::ms(&pb.elapsed())));
+    utils::log_timing_ms("scaffolded", &pb.elapsed());
 
-    utils::log_info(&format!(
-        "run server: `cd {} && {}`",
-        loc.display(),
-        comp.run_cmd()
-    ));
+    utils::log_info(
+        "run server",
+        &format!("`cd {} && {}`", loc.display(), comp.run_cmd()),
+    );
 
     Ok(())
 }

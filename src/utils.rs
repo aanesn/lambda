@@ -10,14 +10,14 @@ pub fn rcfg() -> RenderConfig<'static> {
         prompt_prefix: Styled::new("?").with_fg(Color::DarkMagenta),
         answered_prompt_prefix: Styled::new("λ").with_fg(Color::DarkMagenta),
         prompt: StyleSheet::empty().with_attr(Attributes::BOLD),
-        default_value: StyleSheet::empty().with_fg(Color::DarkGrey),
+        default_value: StyleSheet::empty().with_fg(Color::Grey),
         placeholder: StyleSheet::empty(),
         help_message: StyleSheet::empty(),
         text_input: StyleSheet::empty(),
         error_message: ErrorMessageRenderConfig::empty()
             .with_prefix(Styled::new("#").with_fg(Color::DarkRed))
             .with_message(StyleSheet::new().with_fg(Color::DarkRed)),
-        answer: StyleSheet::empty(),
+        answer: StyleSheet::empty().with_fg(Color::Grey),
         canceled_prompt_indicator: Styled::new("<canceled>"),
         password_mask: '*',
         highlighted_option_prefix: Styled::new(">").with_fg(Color::DarkMagenta),
@@ -27,7 +27,7 @@ pub fn rcfg() -> RenderConfig<'static> {
         unselected_checkbox: Styled::new("[ ]"),
         option_index_prefix: IndexPrefix::None,
         option: StyleSheet::empty().with_fg(Color::DarkGrey),
-        selected_option: Some(StyleSheet::empty()),
+        selected_option: Some(StyleSheet::empty().with_fg(Color::Grey)),
     }
 }
 
@@ -35,9 +35,19 @@ pub fn log_err(e: anyhow::Error) {
     eprintln!("{}", format!("# {}", e).dark_red());
 }
 
-pub fn log_info(msg: &str) {
+pub fn log_info(msg: &str, desc: &str) {
     println!();
-    println!("{} {}", "λ".dark_magenta(), msg);
+    println!("{} {} {}", "λ".dark_magenta(), msg.bold(), desc.grey());
+}
+
+pub fn log_timing_ms(msg: &str, dur: &Duration) {
+    println!();
+    println!(
+        "{} {} {}",
+        "λ".dark_magenta(),
+        msg.bold(),
+        format!("({:.1}ms)", dur.as_secs_f64() * 1000.0).grey()
+    );
 }
 
 pub fn spinner() -> ProgressBar {
@@ -50,8 +60,4 @@ pub fn spinner() -> ProgressBar {
     );
     pb.enable_steady_tick(Duration::from_millis(120));
     pb
-}
-
-pub fn ms(dur: &Duration) -> f64 {
-    dur.as_secs_f64() * 1000.0
 }
