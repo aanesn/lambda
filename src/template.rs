@@ -1,4 +1,4 @@
-use crate::new::framework::Framework;
+use crate::framework::Framework;
 use std::path::PathBuf;
 
 #[derive(rust_embed::Embed)]
@@ -15,20 +15,23 @@ pub fn scaffold(loc: &PathBuf, name: &str, fw: &Framework) -> anyhow::Result<()>
             continue;
         }
 
-        let file = Templates::get(&path).unwrap();
-        let content = std::str::from_utf8(file.data.as_ref())?;
-        let processed = content.replace("{% name %}", name);
-
         let rel = path.strip_prefix(&format!("{}/", template)).unwrap();
         let dest = loc.join(rel);
+
+        // don't overwrite
+        if dest.exists() {
+            continue;
+        }
 
         if let Some(parent) = dest.parent() {
             std::fs::create_dir_all(parent)?;
         }
 
-        if !dest.exists() {
-            std::fs::write(dest, processed)?;
-        }
+        let file = Templates::get(&path).unwrap();
+        let content = std::str::from_utf8(file.data.as_ref())?;
+        let processed = content.replace("{% name %}", name);
+
+        std::fs::write(dest, processed)?;
     }
 
     Ok(())

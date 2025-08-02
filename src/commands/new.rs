@@ -1,10 +1,9 @@
-use crate::{new::framework::Framework, utils};
+use crate::{
+    framework::{self, Framework},
+    location, template, utils,
+};
 use clap::Parser;
 use std::path::PathBuf;
-
-mod framework;
-mod location;
-mod template;
 
 #[derive(Parser)]
 pub struct NewArgs {
@@ -50,10 +49,7 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     pb.set_message("scaffolding...");
     template::scaffold(&loc, &name, &fw)?;
     pb.finish_and_clear();
-    utils::log_info(&format!(
-        "scaffolded in {:.1}ms",
-        pb.elapsed().as_secs_f64() * 1000.0
-    ));
+    utils::log_info(&format!("scaffolded in {:.1}ms", utils::ms(&pb.elapsed())));
 
     Ok(())
 }

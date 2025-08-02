@@ -1,10 +1,9 @@
-use std::time::Duration;
-
 use crossterm::style::Stylize;
 use indicatif::{ProgressBar, ProgressStyle};
 use inquire::ui::{
     Attributes, Color, ErrorMessageRenderConfig, IndexPrefix, RenderConfig, StyleSheet, Styled,
 };
+use std::time::Duration;
 
 pub fn rcfg() -> RenderConfig<'static> {
     RenderConfig {
@@ -50,4 +49,8 @@ pub fn spinner() -> ProgressBar {
     );
     pb.enable_steady_tick(Duration::from_millis(120));
     pb
+}
+
+pub fn ms(dur: &Duration) -> f64 {
+    dur.as_secs_f64() * 1000.0
 }

@@ -1,5 +1,8 @@
 mod cli;
-mod new;
+mod commands;
+mod framework;
+mod location;
+mod template;
 mod utils;
 
 fn main() {
