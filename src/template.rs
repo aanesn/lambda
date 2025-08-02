@@ -16,7 +16,7 @@ pub fn scaffold(loc: &PathBuf, name: &str, fw: &Framework) -> anyhow::Result<()>
             loc.join(rel)
         };
 
-        // don't overwrite
+        // don't overwrite things
         if path.exists() {
             continue;
         }

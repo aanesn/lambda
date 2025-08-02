@@ -1,4 +1,7 @@
-use crate::commands::new::{NewArgs, new};
+use crate::commands::{
+    init::{InitArgs, init},
+    new::{NewArgs, new},
+};
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -12,6 +15,8 @@ struct Cli {
 enum Command {
     #[command(about = "scaffold a new lambda")]
     New(NewArgs),
+    #[command(about = "scaffold a new lambda in the current directory")]
+    Init(InitArgs),
 }
 
 pub fn run() -> anyhow::Result<()> {
@@ -19,6 +24,7 @@ pub fn run() -> anyhow::Result<()> {
 
     match &cli.command {
         Command::New(nargs) => new(nargs)?,
+        Command::Init(iargs) => init(iargs)?,
     }
 
     Ok(())
