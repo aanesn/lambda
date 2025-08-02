@@ -50,7 +50,10 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     pb.set_message("scaffolding...");
     template::scaffold(&loc, &name, &fw)?;
     pb.finish_and_clear();
-    utils::log_info(&format!("scaffolded in {:.1}s", pb.elapsed().as_secs_f32()));
+    utils::log_info(&format!(
+        "scaffolded in {:.1}ms",
+        pb.elapsed().as_secs_f64() * 1000.0
+    ));
 
     Ok(())
 }
