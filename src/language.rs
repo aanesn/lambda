@@ -1,7 +1,7 @@
 use inquire::{Select, ui::RenderConfig};
 use std::{fmt::Display, path::PathBuf, str::FromStr};
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Language {
     Rust,
     Go,

@@ -1,4 +1,7 @@
-use crate::language::{self, Language};
+use crate::{
+    compiler::{self, Compiler},
+    language::{self, Language},
+};
 use clap::Parser;
 use std::path::PathBuf;
 
@@ -6,6 +9,9 @@ use std::path::PathBuf;
 pub struct BuildArgs {
     #[arg(long, alias = "lang")]
     language: Option<Language>,
+
+    #[arg(long, alias = "comp")]
+    compiler: Option<Compiler>,
 
     #[arg(long, default_value = ".")]
     cwd: PathBuf,
@@ -17,7 +23,12 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
         None => language::detect(&bargs.cwd)?,
     };
 
-    println!("building lambda in {}", lang);
+    let comp = match &bargs.compiler {
+        Some(comp) => comp.clone(),
+        None => compiler::detect(&lang),
+    };
+
+    println!("building lambda in {} with {}", lang, comp);
 
     Ok(())
 }
