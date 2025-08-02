@@ -3,6 +3,7 @@ use crate::commands::{
     init::{InitArgs, init},
     new::{NewArgs, new},
 };
+use cargo_zigbuild::Zig;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -20,6 +21,8 @@ enum Command {
     Init(InitArgs),
     #[command(about = "compile and package lambda")]
     Build(BuildArgs),
+    #[command(subcommand, hide = true)]
+    Zig(Zig),
 }
 
 pub fn run() -> anyhow::Result<()> {
@@ -29,6 +32,7 @@ pub fn run() -> anyhow::Result<()> {
         Command::New(nargs) => new(nargs)?,
         Command::Init(iargs) => init(iargs)?,
         Command::Build(bargs) => build(bargs)?,
+        Command::Zig(zig) => zig.execute()?,
     }
 
     Ok(())

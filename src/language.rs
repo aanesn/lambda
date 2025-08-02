@@ -50,7 +50,7 @@ pub fn detect(cwd: &PathBuf) -> anyhow::Result<Language> {
         return Ok(Language::Rust);
     }
     if cwd.join("go.mod").exists() {
-        return Ok(Language::Rust);
+        return Ok(Language::Go);
     }
     anyhow::bail!("failed to auto-detect language, use --language to override")
 }

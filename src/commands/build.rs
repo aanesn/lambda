@@ -15,6 +15,9 @@ pub struct BuildArgs {
 
     #[arg(long, default_value = ".")]
     cwd: PathBuf,
+
+    #[arg(long)]
+    arm64: bool,
 }
 
 pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
@@ -28,7 +31,14 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
         None => compiler::detect(&lang),
     };
 
-    println!("building lambda in {} with {}", lang, comp);
+    let dest = compiler::exec(&comp, &bargs.cwd, &bargs.arm64)?;
+
+    println!(
+        "building lambda in {} with {} at {}",
+        lang,
+        comp,
+        dest.display()
+    );
 
     Ok(())
 }

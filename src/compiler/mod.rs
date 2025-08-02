@@ -1,5 +1,9 @@
 use crate::language::Language;
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, path::PathBuf, str::FromStr};
+
+mod cargo;
+mod cargo_zigbuild;
+mod go;
 
 #[derive(Clone)]
 pub enum Compiler {
@@ -55,6 +59,14 @@ pub fn detect(lang: &Language) -> Compiler {
             return Compiler::CargoZigbuild;
         }
     }
-
     Compiler::from_lang(lang)
+}
+
+pub fn exec(comp: &Compiler, cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
+    let dest = match comp {
+        Compiler::Cargo => cargo::build(cwd, arm64)?,
+        Compiler::CargoZigbuild => cargo_zigbuild::build(cwd, arm64)?,
+        Compiler::Go => go::build(cwd, arm64)?,
+    };
+    Ok(dest)
 }

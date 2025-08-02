@@ -5,9 +5,12 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
+cargo-zigbuild = "0.20.1"
 clap = { version = "4.5.42", features = ["derive"] }
 crossterm = "0.29.0"
 indicatif = "0.18.0"
 inquire = "0.7.5"
 rust-embed = "8.7.2"
+toml = "0.9.4"
 unicode-xid = "0.2.6"
+which = "8.0.0"
