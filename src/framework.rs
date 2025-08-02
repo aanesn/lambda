@@ -1,7 +1,6 @@
+use crate::language::Language;
 use inquire::{Select, ui::RenderConfig};
 use std::{fmt::Display, str::FromStr};
-
-use crate::language::Language;
 
 #[derive(Clone)]
 pub enum Framework {
@@ -28,6 +27,7 @@ impl FromStr for Framework {
     type Err = anyhow::Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
+            "vanilla" => Ok(Framework::Vanilla),
             "axum" => Ok(Framework::Axum),
             "actix" => Ok(Framework::Actix),
             "rocket" => Ok(Framework::Rocket),

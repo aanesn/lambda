@@ -49,6 +49,14 @@ pub fn init(iargs: &InitArgs) -> anyhow::Result<()> {
         None => Compiler::from_lang(&lang),
     };
 
+    let manifest = comp.manifest();
+    if loc.join(manifest).exists() {
+        anyhow::bail!(
+            "`lambda init` cannot be run in a directory with an existing `{}` manifest",
+            manifest
+        )
+    }
+
     let fw = match &iargs.framework {
         Some(fw) => fw.clone(),
         None => framework::prompt(&rcfg, &lang)?,
