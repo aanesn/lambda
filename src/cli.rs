@@ -1,5 +1,6 @@
 use crate::commands::{
     build::{BuildArgs, build},
+    deploy::{DeployArgs, deploy},
     init::{InitArgs, init},
     new::{NewArgs, new},
 };
@@ -21,6 +22,8 @@ enum Command {
     Init(InitArgs),
     #[command(about = "compile and package lambda")]
     Build(BuildArgs),
+    #[command(about = "publish lambda to aws")]
+    Deploy(DeployArgs),
     #[command(subcommand, hide = true)]
     Zig(Zig),
 }
@@ -32,6 +35,7 @@ pub fn run() -> anyhow::Result<()> {
         Command::New(nargs) => new(nargs)?,
         Command::Init(iargs) => init(iargs)?,
         Command::Build(bargs) => build(bargs)?,
+        Command::Deploy(dargs) => deploy(dargs)?,
         Command::Zig(zig) => zig.execute()?,
     }
 
