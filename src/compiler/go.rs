@@ -21,5 +21,6 @@ pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
         );
     };
 
-    Ok(cwd.clone())
+    let binary = cwd.join("bootstrap");
+    Ok(binary)
 }

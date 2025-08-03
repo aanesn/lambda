@@ -63,10 +63,10 @@ pub fn detect(lang: &Language) -> Compiler {
 }
 
 pub fn exec(comp: &Compiler, cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
-    let dest = match comp {
+    let binary = match comp {
         Compiler::Cargo => cargo::build(cwd, arm64)?,
         Compiler::CargoZigbuild => cargo_zigbuild::build(cwd, arm64)?,
         Compiler::Go => go::build(cwd, arm64)?,
     };
-    Ok(dest)
+    Ok(binary)
 }

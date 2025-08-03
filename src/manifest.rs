@@ -1,11 +1,14 @@
-use crate::language::Language;
 use std::path::PathBuf;
 
-pub fn get_name(lang: &Language, manifest_path: &PathBuf) -> anyhow::Result<String> {
-    let name = match lang {
-        Language::Rust => cargo_toml(manifest_path)?,
-        Language::Go => go_mod(manifest_path)?,
+pub fn get_name(manifest_path: &PathBuf) -> anyhow::Result<String> {
+    let file_name = manifest_path.file_name().unwrap().to_str().unwrap();
+
+    let name = match file_name {
+        "Cargo.toml" => cargo_toml(manifest_path)?,
+        "go.mod" => go_mod(manifest_path)?,
+        _ => anyhow::bail!("`{}` is an unsupported manifest", file_name),
     };
+
     Ok(name)
 }
 

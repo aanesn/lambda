@@ -26,6 +26,7 @@ pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
         );
     };
 
-    let dest = cwd.join("target").join(target).join("release");
-    Ok(dest)
+    let name = crate::manifest::get_name(&manifest_path)?;
+    let binary = cwd.join("target").join(target).join("release").join(name);
+    Ok(binary)
 }

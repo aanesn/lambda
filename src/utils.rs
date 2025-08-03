@@ -3,7 +3,10 @@ use indicatif::{ProgressBar, ProgressStyle};
 use inquire::ui::{
     Attributes, Color, ErrorMessageRenderConfig, IndexPrefix, RenderConfig, StyleSheet, Styled,
 };
-use std::time::Duration;
+use std::{
+    path::{PathBuf, absolute},
+    time::Duration,
+};
 
 pub fn rcfg() -> RenderConfig<'static> {
     RenderConfig {
@@ -54,6 +57,15 @@ pub fn log_timing_sec(msg: &str, dur: &Duration) {
         "λ".dark_magenta(),
         msg.bold(),
         format!("({:.1}s)", dur.as_secs_f64()).grey()
+    );
+}
+
+pub fn log_path(msg: &str, path: &PathBuf) {
+    println!(
+        "{} {} {}",
+        "λ".dark_magenta(),
+        msg.bold(),
+        format!("`{}`", absolute(path).unwrap().display()).grey()
     );
 }
 

@@ -35,10 +35,12 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
     let pb = utils::spinner();
     pb.set_message("building...");
 
-    let dest = compiler::exec(&comp, &bargs.cwd, &bargs.arm64)?;
+    let binary = compiler::exec(&comp, &bargs.cwd, &bargs.arm64)?;
 
     pb.finish_and_clear();
     utils::log_timing_sec("built", &pb.elapsed());
+
+    utils::log_path("binary", &binary);
 
     Ok(())
 }
