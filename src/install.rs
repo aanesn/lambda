@@ -107,6 +107,7 @@ fn install_opts() -> Vec<InstallOpts> {
     opts
 }
 
+#[allow(dead_code)]
 fn exclude_iopts(iopts: &mut Vec<InstallOpts>, rm: &[InstallOpts]) {
     iopts.retain(|iopt| !rm.contains(iopt));
 }
