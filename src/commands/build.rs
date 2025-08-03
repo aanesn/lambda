@@ -1,6 +1,7 @@
 use crate::{
     compiler::{self, Compiler},
     language::{self, Language},
+    utils,
 };
 use clap::Parser;
 use std::path::PathBuf;
@@ -31,14 +32,13 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
         None => compiler::detect(&lang),
     };
 
+    let pb = utils::spinner();
+    pb.set_message("building...");
+
     let dest = compiler::exec(&comp, &bargs.cwd, &bargs.arm64)?;
 
-    println!(
-        "building lambda in {} with {} at {}",
-        lang,
-        comp,
-        dest.display()
-    );
+    pb.finish_and_clear();
+    utils::log_timing_sec("built", &pb.elapsed());
 
     Ok(())
 }

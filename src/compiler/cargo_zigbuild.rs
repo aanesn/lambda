@@ -18,6 +18,7 @@ pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
     let zig_build = {
         let mut zb = ZigBuild::new(Some(manifest_path.clone()));
         zb.common.target = vec![target.to_string()];
+        zb.common.quiet = true;
         zb.release = true;
         zb
     };

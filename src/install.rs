@@ -1,4 +1,4 @@
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 #[derive(Clone, Copy, PartialEq)]
 enum InstallOpts {
@@ -58,7 +58,10 @@ pub fn zig() -> anyhow::Result<()> {
     }
 
     let iopt = iopts[0];
-    let output = Command::new(iopt.cmd()).args(iopt.zig_args()).output()?;
+    let output = Command::new(iopt.cmd())
+        .args(iopt.zig_args())
+        .stdout(Stdio::null())
+        .output()?;
 
     if !output.status.success() {
         anyhow::bail!(

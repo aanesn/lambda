@@ -64,7 +64,9 @@ pub fn init(iargs: &InitArgs) -> anyhow::Result<()> {
 
     let pb = utils::spinner();
     pb.set_message("scaffolding...");
+
     template::scaffold(&loc, &name, &lang, &fw)?;
+
     pb.finish_and_clear();
     utils::log_timing_ms("scaffolded", &pb.elapsed());
 

@@ -1,8 +1,9 @@
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 pub fn check_rust_target(target: &str) -> anyhow::Result<()> {
     let output = Command::new("rustup")
         .args(["target", "list", "--installed"])
+        .stdout(Stdio::piped())
         .output()?;
 
     if !output.status.success() {
@@ -25,6 +26,7 @@ pub fn check_rust_target(target: &str) -> anyhow::Result<()> {
 fn install_rust_target(target: &str) -> anyhow::Result<()> {
     let output = Command::new("rustup")
         .args(["target", "add", target])
+        .stdout(Stdio::null())
         .output()?;
 
     if !output.status.success() {

@@ -36,17 +36,24 @@ pub fn log_err(e: anyhow::Error) {
 }
 
 pub fn log_info(msg: &str, desc: &str) {
-    println!();
     println!("{} {} {}", "λ".dark_magenta(), msg.bold(), desc.grey());
 }
 
 pub fn log_timing_ms(msg: &str, dur: &Duration) {
-    println!();
     println!(
         "{} {} {}",
         "λ".dark_magenta(),
         msg.bold(),
         format!("({:.1}ms)", dur.as_secs_f64() * 1000.0).grey()
+    );
+}
+
+pub fn log_timing_sec(msg: &str, dur: &Duration) {
+    println!(
+        "{} {} {}",
+        "λ".dark_magenta(),
+        msg.bold(),
+        format!("({:.1}s)", dur.as_secs_f64()).grey()
     );
 }
 

@@ -1,4 +1,7 @@
-use std::{path::PathBuf, process::Command};
+use std::{
+    path::PathBuf,
+    process::{Command, Stdio},
+};
 
 pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
     let manifest_path = cwd.join("Cargo.toml");
@@ -13,6 +16,7 @@ pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
     let output = Command::new("cargo")
         .args(["build", "--release", "--target", target, "--manifest-path"])
         .arg(manifest_path.as_os_str())
+        .stdout(Stdio::null())
         .output()?;
 
     if !output.status.success() {
