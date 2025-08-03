@@ -28,14 +28,14 @@ enum Command {
     Zig(Zig),
 }
 
-pub fn run() -> anyhow::Result<()> {
+pub async fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
         Command::New(nargs) => new(nargs)?,
         Command::Init(iargs) => init(iargs)?,
         Command::Build(bargs) => build(bargs)?,
-        Command::Deploy(dargs) => deploy(dargs)?,
+        Command::Deploy(dargs) => deploy(dargs).await?,
         Command::Zig(zig) => zig.execute()?,
     }
 
