@@ -1,3 +1,4 @@
+use aws_sdk_lambda::types::Runtime;
 use inquire::{Select, ui::RenderConfig};
 use std::{fmt::Display, path::PathBuf, str::FromStr};
 
@@ -34,6 +35,20 @@ impl Language {
         match self {
             Language::Rust => "Cargo.toml",
             Language::Go => "go.mod",
+        }
+    }
+
+    pub fn runtime(&self) -> Runtime {
+        match self {
+            Language::Rust => Runtime::Providedal2023,
+            Language::Go => Runtime::Providedal2023,
+        }
+    }
+
+    pub fn handler(&self) -> &str {
+        match self {
+            Language::Rust => "bootstrap",
+            Language::Go => "bootstrap",
         }
     }
 }

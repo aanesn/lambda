@@ -1,5 +1,13 @@
-use crate::language::{self, Language};
+use crate::{
+    language::{self, Language},
+    utils,
+};
+use anyhow::Context;
 use aws_config::BehaviorVersion;
+use aws_sdk_lambda::{
+    primitives::Blob,
+    types::{Architecture, Cors, FunctionCode, FunctionUrlAuthType, Runtime},
+};
 use clap::Parser;
 use std::path::PathBuf;
 
@@ -16,16 +24,104 @@ pub struct DeployArgs {
 
     #[arg(long)]
     arm64: bool,
+
+    #[arg(long)]
+    name: Option<String>,
+
+    #[arg(long, alias = "rt")]
+    runtime: Option<Runtime>,
+
+    #[arg(long)]
+    iam_role: String,
+
+    #[arg(long)]
+    handler: Option<String>,
 }
 
 pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
+    let bootstrap = &dargs.output_dir.join("bootstrap.zip");
+    if !bootstrap.exists() {
+        anyhow::bail!("failed to find bootstrap, run `lambda build` to build it");
+    }
+
     let lang = match &dargs.language {
         Some(lang) => lang.clone(),
         None => language::detect(&dargs.cwd)?,
     };
 
     let cfg = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    println!("region: {:?}", cfg.region());
+    let client = aws_sdk_lambda::Client::new(&cfg);
+    let region = cfg.region().unwrap().as_ref();
+
+    let name = match &dargs.name {
+        Some(name) => name.clone(),
+        None => {
+            let manifest_path = &dargs.cwd.join(lang.manifest());
+            crate::manifest::get_name(manifest_path)?
+        }
+    };
+
+    let rt = match &dargs.runtime {
+        Some(rt) => rt.clone(),
+        None => lang.runtime(),
+    };
+
+    let handler = match &dargs.handler {
+        Some(handler) => handler.clone(),
+        None => lang.handler().to_string(),
+    };
+
+    let code = {
+        let buf = std::fs::read(bootstrap)?;
+        let blob = Blob::new(buf);
+        FunctionCode::builder().zip_file(blob).build()
+    };
+
+    let (arch, arch_str) = if dargs.arm64 {
+        (Architecture::Arm64, "Arm64")
+    } else {
+        (Architecture::X8664, "X86")
+    };
+
+    let lambda_adapter = format!(
+        "arn:aws:lambda:{}:753240598075:layer:LambdaAdapterLayer{}:24",
+        region, arch_str
+    );
+
+    let pb = utils::spinner();
+    pb.set_message("creating function...");
+
+    client
+        .create_function()
+        .function_name(&name)
+        .runtime(rt)
+        .role(&dargs.iam_role)
+        .handler(handler)
+        .code(code)
+        .layers(lambda_adapter)
+        .architectures(arch)
+        .send()
+        .await
+        .with_context(|| anyhow::anyhow!("failed to create function"))?;
+
+    pb.finish_and_clear();
+    utils::log_timing_sec("created function", &pb.elapsed());
+
+    let pb = utils::spinner();
+    pb.set_message("creating function url...");
+
+    let res = &client
+        .create_function_url_config()
+        .function_name(&name)
+        .auth_type(FunctionUrlAuthType::None)
+        .send()
+        .await
+        .with_context(|| anyhow::anyhow!("failed to create function url"))?;
+
+    pb.finish_and_clear();
+    utils::log_timing_sec("created function url", &pb.elapsed());
+
+    utils::log_info("function url", res.function_url());
 
     Ok(())
 }
