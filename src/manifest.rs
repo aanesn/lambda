@@ -23,5 +23,15 @@ fn cargo_toml(manifest_path: &PathBuf) -> anyhow::Result<String> {
 }
 
 fn go_mod(manifest_path: &PathBuf) -> anyhow::Result<String> {
-    Ok("todo".to_string())
+    let contents = std::fs::read_to_string(&manifest_path)?;
+
+    for line in contents.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("module ") {
+            let name = trimmed.strip_prefix("module ").unwrap().trim();
+            return Ok(name.to_string());
+        }
+    }
+
+    anyhow::bail!("failed to get name from `{}`", manifest_path.display());
 }
