@@ -6,7 +6,7 @@ use anyhow::Context;
 use aws_config::BehaviorVersion;
 use aws_sdk_lambda::{
     primitives::Blob,
-    types::{Architecture, Cors, FunctionCode, FunctionUrlAuthType, Runtime},
+    types::{Architecture, FunctionCode, FunctionUrlAuthType, Runtime},
 };
 use clap::Parser;
 use std::path::PathBuf;
@@ -117,6 +117,17 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         .send()
         .await
         .with_context(|| anyhow::anyhow!("failed to create function url"))?;
+
+    client
+        .add_permission()
+        .function_name(&name)
+        .statement_id("allow-public-invoke")
+        .action("lambda:InvokeFunctionUrl")
+        .principal("*")
+        .function_url_auth_type(FunctionUrlAuthType::None)
+        .send()
+        .await
+        .with_context(|| anyhow::anyhow!("failed to add public invoke permission"))?;
 
     pb.finish_and_clear();
     utils::log_timing_sec("created function url", &pb.elapsed());
