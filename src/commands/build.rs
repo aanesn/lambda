@@ -4,7 +4,8 @@ use crate::{
     utils,
 };
 use clap::Parser;
-use std::path::PathBuf;
+use std::{fs::File, path::PathBuf};
+use zip::{ZipWriter, write::SimpleFileOptions};
 
 #[derive(Parser)]
 pub struct BuildArgs {
@@ -16,6 +17,9 @@ pub struct BuildArgs {
 
     #[arg(long, default_value = ".")]
     cwd: PathBuf,
+
+    #[arg(long, short = 'o', default_value = ".lambda")]
+    output_dir: PathBuf,
 
     #[arg(long)]
     arm64: bool,
@@ -40,7 +44,30 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
     pb.finish_and_clear();
     utils::log_timing_sec("built", &pb.elapsed());
 
-    utils::log_path("binary", &binary);
+    let pb = utils::spinner();
+    pb.set_message("zipping...");
+
+    let bootstrap = zip(&binary, &bargs.output_dir)?;
+
+    pb.finish_and_clear();
+    utils::log_timing_ms("zipped", &pb.elapsed());
+
+    utils::log_path("bootstrap", &bootstrap);
 
     Ok(())
+}
+
+pub fn zip(binary: &PathBuf, output_dir: &PathBuf) -> anyhow::Result<PathBuf> {
+    std::fs::create_dir_all(output_dir)?;
+
+    let bootstrap = &output_dir.join("bootstrap.zip");
+    let file = File::create(bootstrap)?;
+    let mut zip = ZipWriter::new(file);
+
+    let opts = SimpleFileOptions::default().unix_permissions(0o755);
+    zip.start_file("bootstrap", opts)?;
+    std::io::copy(&mut File::open(binary)?, &mut zip)?;
+
+    zip.finish()?;
+    Ok(bootstrap.clone())
 }
