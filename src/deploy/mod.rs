@@ -11,6 +11,8 @@ use aws_sdk_lambda::{
 use clap::Parser;
 use std::path::PathBuf;
 
+mod function;
+
 #[derive(Parser)]
 pub struct DeployArgs {
     #[arg(long, alias = "lang")]
@@ -61,7 +63,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         }
     };
 
-    let rt = match &dargs.runtime {
+    let runtime = match &dargs.runtime {
         Some(rt) => rt.clone(),
         None => lang.runtime(),
     };
@@ -83,7 +85,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         (Architecture::X8664, "X86")
     };
 
-    let lambda_adapter = format!(
+    let adapter = format!(
         "arn:aws:lambda:{}:753240598075:layer:LambdaAdapterLayer{}:24",
         region, arch_str
     );
@@ -91,18 +93,17 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     let pb = utils::spinner();
     pb.set_message("creating function...");
 
-    client
-        .create_function()
-        .function_name(&name)
-        .runtime(rt)
-        .role(&dargs.iam_role)
-        .handler(handler)
-        .code(code)
-        .layers(lambda_adapter)
-        .architectures(arch)
-        .send()
-        .await
-        .with_context(|| anyhow::anyhow!("failed to create function"))?;
+    function::create(
+        &client,
+        &name,
+        &runtime,
+        &dargs.iam_role,
+        &handler,
+        &code,
+        &adapter,
+        &arch,
+    )
+    .await?;
 
     pb.finish_and_clear();
     utils::log_timing_sec("created function", &pb.elapsed());

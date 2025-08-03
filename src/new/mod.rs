@@ -1,11 +1,15 @@
 use crate::{
     compiler::Compiler,
-    framework::{self, Framework},
     language::{self, Language},
-    location, template, utils,
+    new::framework::Framework,
+    utils,
 };
 use clap::Parser;
 use std::path::PathBuf;
+
+mod framework;
+mod location;
+mod template;
 
 #[derive(Parser)]
 pub struct NewArgs {
@@ -35,13 +39,6 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
         None => location::prompt(&rcfg)?, // checks loc internally
     };
 
-    if loc.exists() {
-        anyhow::bail!(
-            "`{}` already exists, use `lambda init` to initialize the directory",
-            loc.display()
-        );
-    }
-
     let name = match &nargs.name {
         Some(name) => name.clone(),
         None => location::get_name(&loc)?,
@@ -52,6 +49,14 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
         Some(lang) => lang.clone(),
         None => language::prompt(&rcfg)?,
     };
+
+    let manifest = lang.manifest();
+    if loc.join(manifest).exists() {
+        anyhow::bail!(
+            "`lambda new` cannot be run in a directory with an existing `{}` manifest",
+            manifest
+        )
+    }
 
     let comp = match &nargs.compiler {
         Some(comp) => comp.clone(),

@@ -1,4 +1,4 @@
-use crate::{framework::Framework, language::Language};
+use crate::{language::Language, new::framework::Framework};
 use std::path::PathBuf;
 
 #[derive(rust_embed::Embed)]

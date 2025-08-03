@@ -1,12 +1,11 @@
+mod build;
 mod cli;
-mod commands;
 mod compiler;
-mod framework;
+mod deploy;
 mod install;
 mod language;
-mod location;
 mod manifest;
-mod template;
+mod new;
 mod toolchain;
 mod utils;
 

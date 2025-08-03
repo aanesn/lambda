@@ -1,7 +1,6 @@
-use crate::commands::{
+use crate::{
     build::{BuildArgs, build},
     deploy::{DeployArgs, deploy},
-    init::{InitArgs, init},
     new::{NewArgs, new},
 };
 use cargo_zigbuild::Zig;
@@ -18,8 +17,6 @@ struct Cli {
 enum Command {
     #[command(about = "scaffold a new lambda")]
     New(NewArgs),
-    #[command(about = "scaffold a new lambda in the current directory")]
-    Init(InitArgs),
     #[command(about = "compile and package lambda")]
     Build(BuildArgs),
     #[command(about = "publish lambda to aws")]
@@ -33,7 +30,6 @@ pub async fn run() -> anyhow::Result<()> {
 
     match &cli.command {
         Command::New(nargs) => new(nargs)?,
-        Command::Init(iargs) => init(iargs)?,
         Command::Build(bargs) => build(bargs)?,
         Command::Deploy(dargs) => deploy(dargs).await?,
         Command::Zig(zig) => zig.execute()?,
