@@ -3,10 +3,15 @@ extern crate rocket;
 
 #[get("/")]
 fn hello() -> &'static str {
-    "hello, world!"
+    "hello world!"
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![hello])
+    let rcfg = rocket::Config {
+        port: 8080,
+        ..Default::default()
+    };
+
+    rocket::build().configure(&rcfg).mount("/", routes![hello])
 }

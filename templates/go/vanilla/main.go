@@ -7,10 +7,9 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "hello, world!")
+		fmt.Fprintf(w, "hello world!")
 	})
 
-	addr := ":8080"
-	fmt.Printf("listening on http://localhost%s\n", addr)
-	http.ListenAndServe(addr, nil)
+	fmt.Println("listening on http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 }
