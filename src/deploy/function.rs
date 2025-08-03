@@ -12,12 +12,12 @@ pub async fn create(
 ) -> anyhow::Result<()> {
     client
         .create_function()
-        .function_name(name.clone())
+        .function_name(name)
         .runtime(runtime.clone())
-        .role(iam_role.clone())
+        .role(iam_role)
         .handler(handler)
         .code(code.clone())
-        .layers(adapter.clone())
+        .layers(adapter)
         .architectures(arch.clone())
         .send()
         .await?;
