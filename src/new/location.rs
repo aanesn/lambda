@@ -2,7 +2,7 @@ use inquire::{Text, ui::RenderConfig, validator::Validation};
 use std::path::PathBuf;
 use unicode_xid::UnicodeXID;
 
-const DEFAULT_LOCATION: &str = "lambda";
+const DEFAULT_LOCATION: &str = "./";
 const MAX_NAME_LEN: usize = 214;
 
 pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<PathBuf> {
@@ -38,7 +38,8 @@ pub fn check_loc(loc: &PathBuf) -> anyhow::Result<()> {
 }
 
 pub fn get_name(loc: &PathBuf) -> anyhow::Result<String> {
-    let name = loc.file_name().ok_or_else(|| {
+    let abs = std::path::absolute(loc)?;
+    let name = abs.file_name().ok_or_else(|| {
         anyhow::anyhow!(
             "failed to auto-detect name from location `{}`, use --name to override",
             loc.display()

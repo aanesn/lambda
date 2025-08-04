@@ -53,7 +53,7 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     let manifest = lang.manifest();
     if loc.join(manifest).exists() {
         anyhow::bail!(
-            "`lambda new` cannot be run in a directory with an existing `{}` manifest",
+            "cannot run `lambda new` in a directory with an existing `{}` manifest",
             manifest
         )
     }
@@ -74,10 +74,10 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     template::scaffold(&loc, &name, &lang, &fw)?;
 
     pb.finish_and_clear();
-    utils::log_timing_ms("scaffolded", &pb.elapsed());
+    utils::log_info("scaffolded", &utils::ms(&pb.elapsed()));
 
     utils::log_info(
-        "run server",
+        "run dev server:",
         &format!("`cd {} && {}`", loc.display(), comp.run_cmd()),
     );
 

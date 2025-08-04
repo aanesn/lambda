@@ -91,7 +91,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     );
 
     let pb = utils::spinner();
-    pb.set_message("creating function...");
+    pb.set_message("publishing...");
 
     function::create(
         &client,
@@ -106,10 +106,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     .await?;
 
     pb.finish_and_clear();
-    utils::log_timing_sec("created function", &pb.elapsed());
-
-    let pb = utils::spinner();
-    pb.set_message("creating function url...");
+    utils::log_info("published", &utils::sec(&pb.elapsed()));
 
     let res = &client
         .create_function_url_config()
@@ -130,10 +127,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         .await
         .with_context(|| anyhow::anyhow!("failed to add public invoke permission"))?;
 
-    pb.finish_and_clear();
-    utils::log_timing_sec("created function url", &pb.elapsed());
-
-    utils::log_info("function url", res.function_url());
+    utils::log_info("function url:", res.function_url());
 
     Ok(())
 }

@@ -3,10 +3,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use inquire::ui::{
     Attributes, Color, ErrorMessageRenderConfig, IndexPrefix, RenderConfig, StyleSheet, Styled,
 };
-use std::{
-    path::{PathBuf, absolute},
-    time::Duration,
-};
+use std::{path::PathBuf, time::Duration};
 
 pub fn rcfg() -> RenderConfig<'static> {
     RenderConfig {
@@ -38,35 +35,20 @@ pub fn log_err(e: anyhow::Error) {
     eprintln!("{}", format!("# {}", e).dark_red());
 }
 
-pub fn log_info(msg: &str, desc: &str) {
-    println!("{} {} {}", "λ".dark_magenta(), msg.bold(), desc.grey());
+pub fn log_info(primary: &str, secondary: &str) {
+    println!("{} {} {}", "λ".dark_magenta(), primary, secondary.grey());
 }
 
-pub fn log_timing_ms(msg: &str, dur: &Duration) {
-    println!(
-        "{} {} {}",
-        "λ".dark_magenta(),
-        msg.bold(),
-        format!("({:.1}ms)", dur.as_secs_f64() * 1000.0).grey()
-    );
+pub fn ms(dur: &Duration) -> String {
+    format!("({:.1}ms)", dur.as_secs_f64() * 1000.0)
 }
 
-pub fn log_timing_sec(msg: &str, dur: &Duration) {
-    println!(
-        "{} {} {}",
-        "λ".dark_magenta(),
-        msg.bold(),
-        format!("({:.1}s)", dur.as_secs_f64()).grey()
-    );
+pub fn sec(dur: &Duration) -> String {
+    format!("({:.1}s)", dur.as_secs_f64())
 }
 
-pub fn log_path(msg: &str, path: &PathBuf) {
-    println!(
-        "{} {} {}",
-        "λ".dark_magenta(),
-        msg.bold(),
-        format!("`{}`", absolute(path).unwrap().display()).grey()
-    );
+pub fn path(path: &PathBuf) -> String {
+    format!("`{}`", path.display())
 }
 
 pub fn spinner() -> ProgressBar {

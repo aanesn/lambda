@@ -43,17 +43,10 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
     let binary = compiler::exec(&comp, &bargs.cwd, &bargs.arm64)?;
 
     pb.finish_and_clear();
-    utils::log_timing_sec("built", &pb.elapsed());
-
-    let pb = utils::spinner();
-    pb.set_message("zipping...");
+    utils::log_info("built", &utils::sec(&pb.elapsed()));
 
     let bootstrap = archive::zip(&binary, &bargs.output_dir)?;
-
-    pb.finish_and_clear();
-    utils::log_timing_ms("zipped", &pb.elapsed());
-
-    utils::log_path("bootstrap", &bootstrap);
+    utils::log_info("bootstrap:", &utils::path(&bootstrap));
 
     Ok(())
 }
