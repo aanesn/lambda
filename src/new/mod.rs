@@ -77,7 +77,7 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
     utils::log_info("scaffolded", &utils::ms(&pb.elapsed()));
 
     utils::log_info(
-        "run dev server:",
+        "run server:",
         &format!("`cd {} && {}`", loc.display(), comp.run_cmd()),
     );
 
