@@ -40,15 +40,13 @@ impl Language {
 
     pub fn runtime(&self) -> Runtime {
         match self {
-            Language::Rust => Runtime::Providedal2023,
-            Language::Go => Runtime::Providedal2023,
+            Language::Rust | Language::Go => Runtime::Providedal2023,
         }
     }
 
     pub fn handler(&self) -> &str {
         match self {
-            Language::Rust => "bootstrap",
-            Language::Go => "bootstrap",
+            Language::Rust | Language::Go => "bootstrap",
         }
     }
 }

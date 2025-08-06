@@ -2,15 +2,11 @@ use crate::{
     language::{self, Language},
     utils,
 };
-use anyhow::Context;
-use aws_config::BehaviorVersion;
-use aws_sdk_lambda::{
-    primitives::Blob,
-    types::{Architecture, FunctionCode, FunctionUrlAuthType, Runtime},
-};
+use aws_sdk_lambda::types::Runtime;
 use clap::Parser;
 use std::path::PathBuf;
 
+mod config;
 mod function;
 
 #[derive(Parser)]
@@ -30,7 +26,7 @@ pub struct DeployArgs {
     #[arg(long)]
     name: Option<String>,
 
-    #[arg(long, alias = "rt")]
+    #[arg(long)]
     runtime: Option<Runtime>,
 
     #[arg(long)]
@@ -38,22 +34,27 @@ pub struct DeployArgs {
 
     #[arg(long)]
     handler: Option<String>,
+
+    #[arg(long)]
+    region: Option<String>,
+
+    #[arg(long, default_value = "1")]
+    retry: u32,
 }
 
 pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     let bootstrap = &dargs.output_dir.join("bootstrap.zip");
     if !bootstrap.exists() {
-        anyhow::bail!("failed to find bootstrap, run `lambda build` to build it");
+        anyhow::bail!(
+            "failed to find bootstrap `{}`, run `lambda build` to create it",
+            bootstrap.display()
+        );
     }
 
     let lang = match &dargs.language {
         Some(lang) => lang.clone(),
         None => language::detect(&dargs.cwd)?,
     };
-
-    let cfg = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    let client = aws_sdk_lambda::Client::new(&cfg);
-    let region = cfg.region().unwrap().as_ref();
 
     let name = match &dargs.name {
         Some(name) => name.clone(),
@@ -64,7 +65,7 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     };
 
     let runtime = match &dargs.runtime {
-        Some(rt) => rt.clone(),
+        Some(runtime) => runtime.clone(),
         None => lang.runtime(),
     };
 
@@ -73,61 +74,24 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         None => lang.handler().to_string(),
     };
 
-    let code = {
-        let buf = std::fs::read(bootstrap)?;
-        let blob = Blob::new(buf);
-        FunctionCode::builder().zip_file(blob).build()
-    };
-
-    let (arch, arch_str) = if dargs.arm64 {
-        (Architecture::Arm64, "Arm64")
-    } else {
-        (Architecture::X8664, "X86")
-    };
-
-    let adapter = format!(
-        "arn:aws:lambda:{}:753240598075:layer:LambdaAdapterLayer{}:24",
-        region, arch_str
-    );
+    let cfg = config::load(&dargs.region, &dargs.retry).await?;
 
     let pb = utils::spinner();
     pb.set_message("publishing...");
 
-    function::create(
-        &client,
+    function::publish(
+        &cfg,
+        &bootstrap,
+        &dargs.arm64,
         &name,
         &runtime,
         &dargs.iam_role,
         &handler,
-        &code,
-        &adapter,
-        &arch,
     )
     .await?;
 
     pb.finish_and_clear();
     utils::log_info("published", &utils::sec(&pb.elapsed()));
-
-    let res = &client
-        .create_function_url_config()
-        .function_name(&name)
-        .auth_type(FunctionUrlAuthType::None)
-        .send()
-        .await
-        .with_context(|| anyhow::anyhow!("failed to create function url"))?;
-
-    client
-        .add_permission()
-        .function_name(&name)
-        .statement_id("allow-public-invoke")
-        .action("lambda:InvokeFunctionUrl")
-        .principal("*")
-        .function_url_auth_type(FunctionUrlAuthType::None)
-        .send()
-        .await
-        .with_context(|| anyhow::anyhow!("failed to add public invoke permission"))?;
-
-    utils::log_info("function url:", res.function_url());
 
     Ok(())
 }
