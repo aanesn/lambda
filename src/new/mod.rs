@@ -1,5 +1,5 @@
 use crate::{
-    compiler::Compiler,
+    compiler::{self, Compiler},
     language::{self, Language},
     new::framework::Framework,
     utils,
@@ -60,7 +60,7 @@ pub fn new(nargs: &NewArgs) -> anyhow::Result<()> {
 
     let comp = match &nargs.compiler {
         Some(comp) => comp.clone(),
-        None => Compiler::from_lang(&lang),
+        None => compiler::detect(&lang),
     };
 
     let fw = match &nargs.framework {

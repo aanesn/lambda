@@ -3,7 +3,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use inquire::ui::{
     Attributes, Color, ErrorMessageRenderConfig, IndexPrefix, RenderConfig, StyleSheet, Styled,
 };
-use std::{path::PathBuf, time::Duration};
+use std::time::Duration;
 
 pub fn rcfg() -> RenderConfig<'static> {
     RenderConfig {
@@ -45,10 +45,6 @@ pub fn ms(dur: &Duration) -> String {
 
 pub fn sec(dur: &Duration) -> String {
     format!("({:.1}s)", dur.as_secs_f64())
-}
-
-pub fn path(path: &PathBuf) -> String {
-    format!("`{}`", path.display())
 }
 
 pub fn spinner() -> ProgressBar {

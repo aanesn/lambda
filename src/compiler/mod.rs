@@ -35,13 +35,6 @@ impl FromStr for Compiler {
 }
 
 impl Compiler {
-    pub fn from_lang(lang: &Language) -> Self {
-        match lang {
-            Language::Rust => Compiler::Cargo,
-            Language::Go => Compiler::Go,
-        }
-    }
-
     pub fn run_cmd(&self) -> &str {
         match self {
             Compiler::Cargo => "cargo run",
@@ -52,20 +45,22 @@ impl Compiler {
 }
 
 pub fn detect(lang: &Language) -> Compiler {
-    if *lang == Language::Rust {
-        if cfg!(target_os = "linux") && std::env::var("CI").is_ok() {
-            return Compiler::Cargo;
-        } else {
-            return Compiler::CargoZigbuild;
+    match lang {
+        Language::Rust => {
+            if cfg!(target_os = "linux") && std::env::var("CI").is_ok() {
+                Compiler::Cargo
+            } else {
+                Compiler::CargoZigbuild
+            }
         }
+        Language::Go => Compiler::Go,
     }
-    Compiler::from_lang(lang)
 }
 
 pub fn exec(comp: &Compiler, cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
     let binary = match comp {
         Compiler::Cargo => cargo::build(cwd, arm64)?,
-        Compiler::CargoZigbuild => cargo_zigbuild::build(cwd, arm64)?,
+        Compiler::CargoZigbuild => cargo_zigbuild::cc(cwd, arm64)?,
         Compiler::Go => go::build(cwd, arm64)?,
     };
     Ok(binary)

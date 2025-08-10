@@ -1,7 +1,7 @@
 use cargo_zigbuild::{Build as ZigBuild, Zig};
 use std::path::PathBuf;
 
-pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
+pub fn cc(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
     let manifest_path = cwd.join("Cargo.toml");
 
     let target = if *arm64 {

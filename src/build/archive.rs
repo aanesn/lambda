@@ -7,10 +7,11 @@ pub fn zip(binary: &PathBuf, output_dir: &PathBuf) -> anyhow::Result<PathBuf> {
 
     let bootstrap = &output_dir.join("bootstrap.zip");
     let file = File::create(bootstrap)?;
-    let mut zip = ZipWriter::new(file);
 
-    let opts = SimpleFileOptions::default().unix_permissions(0o755);
-    zip.start_file("bootstrap", opts)?;
+    let mut zip = ZipWriter::new(file);
+    let zopts = SimpleFileOptions::default().unix_permissions(0o755);
+
+    zip.start_file("bootstrap", zopts)?;
     std::io::copy(&mut File::open(binary)?, &mut zip)?;
 
     zip.finish()?;

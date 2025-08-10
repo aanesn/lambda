@@ -46,7 +46,7 @@ pub fn build(bargs: &BuildArgs) -> anyhow::Result<()> {
     utils::log_info("built", &utils::sec(&pb.elapsed()));
 
     let bootstrap = archive::zip(&binary, &bargs.output_dir)?;
-    utils::log_info("bootstrap:", &utils::path(&bootstrap));
+    utils::log_info("bootstrap:", &format!("`{}`", bootstrap.display()));
 
     Ok(())
 }

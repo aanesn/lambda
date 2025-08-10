@@ -4,13 +4,13 @@ use std::{
 };
 
 pub fn build(cwd: &PathBuf, arm64: &bool) -> anyhow::Result<PathBuf> {
-    let goarch = if *arm64 { "arm64" } else { "amd64" };
+    let arch = if *arm64 { "arm64" } else { "amd64" };
 
     let output = Command::new("go")
         .args(["build", "-o", "bootstrap"])
         .current_dir(cwd)
         .env("GOOS", "linux")
-        .env("GOARCH", goarch)
+        .env("GOARCH", arch)
         .stdout(Stdio::null())
         .output()?;
 

@@ -51,7 +51,7 @@ pub fn zig() -> anyhow::Result<()> {
     let mut iopts = install_opts();
 
     #[cfg(windows)]
-    exclude_iopts(&mut iopts, &[InstallOpts::Npm]);
+    iopts.retain(|iopt| *iopt != InstallOpts::Npm);
 
     if iopts.is_empty() {
         anyhow::bail!("failed to find install option for zig")
@@ -105,9 +105,4 @@ fn install_opts() -> Vec<InstallOpts> {
     }
 
     opts
-}
-
-#[allow(dead_code)]
-fn exclude_iopts(iopts: &mut Vec<InstallOpts>, rm: &[InstallOpts]) {
-    iopts.retain(|iopt| !rm.contains(iopt));
 }
