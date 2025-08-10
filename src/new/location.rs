@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use unicode_xid::UnicodeXID;
 
 const DEFAULT_LOCATION: &str = "./";
-const MAX_NAME_LEN: usize = 214;
+const MAX_NAME_LEN: usize = 214; // npm max len 
 
 pub fn prompt(rcfg: &RenderConfig) -> anyhow::Result<PathBuf> {
     let text = Text::new("location")
@@ -39,6 +39,7 @@ pub fn check_loc(loc: &PathBuf) -> anyhow::Result<()> {
 
 pub fn get_name(loc: &PathBuf) -> anyhow::Result<String> {
     let abs = std::path::absolute(loc)?;
+
     let name = abs.file_name().ok_or_else(|| {
         anyhow::anyhow!(
             "failed to auto-detect name from location `{}`, use --name to override",
