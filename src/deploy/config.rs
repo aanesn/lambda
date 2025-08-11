@@ -2,7 +2,7 @@ use aws_config::{
     BehaviorVersion, Region, SdkConfig, meta::region::RegionProviderChain, retry::RetryConfig,
 };
 
-const DEFAULT_REGION: &str = "us-east-1";
+const DEFAULT_REGION: &str = "eu-west-1"; // fuck us-east-1
 
 pub async fn load(region: &Option<String>, retry: &u32) -> anyhow::Result<SdkConfig> {
     let region = RegionProviderChain::first_try(region.clone().map(|r| Region::new(r)))
@@ -16,5 +16,6 @@ pub async fn load(region: &Option<String>, retry: &u32) -> anyhow::Result<SdkCon
         .retry_config(retry)
         .load()
         .await;
+
     Ok(cfg)
 }

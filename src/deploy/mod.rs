@@ -1,13 +1,10 @@
-use crate::{
-    language::{self, Language},
-    utils,
-};
+use crate::language::{self, Language};
 use aws_sdk_lambda::types::Runtime;
 use clap::Parser;
 use std::path::PathBuf;
 
 mod config;
-mod function;
+mod role;
 
 #[derive(Parser)]
 pub struct DeployArgs {
@@ -21,16 +18,10 @@ pub struct DeployArgs {
     output_dir: PathBuf,
 
     #[arg(long)]
-    arm64: bool,
-
-    #[arg(long)]
     name: Option<String>,
 
     #[arg(long)]
     runtime: Option<Runtime>,
-
-    #[arg(long)]
-    iam_role: String,
 
     #[arg(long)]
     handler: Option<String>,
@@ -40,16 +31,19 @@ pub struct DeployArgs {
 
     #[arg(long, default_value = "1")]
     retry: u32,
+
+    #[arg(long)]
+    role: Option<String>,
 }
 
 pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     let bootstrap = &dargs.output_dir.join("bootstrap.zip");
-    if !bootstrap.exists() {
-        anyhow::bail!(
-            "failed to find bootstrap `{}`, run `lambda build` to create it",
-            bootstrap.display()
-        );
-    }
+    //if !bootstrap.exists() {
+    //    anyhow::bail!(
+    //        "failed to find bootstrap `{}`, run `lambda build` to create it",
+    //        bootstrap.display()
+    //    );
+    //}
 
     let lang = match &dargs.language {
         Some(lang) => lang.clone(),
@@ -76,22 +70,10 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
 
     let cfg = config::load(&dargs.region, &dargs.retry).await?;
 
-    let pb = utils::spinner();
-    pb.set_message("publishing...");
-
-    function::publish(
-        &cfg,
-        &bootstrap,
-        &dargs.arm64,
-        &name,
-        &runtime,
-        &dargs.iam_role,
-        &handler,
-    )
-    .await?;
-
-    pb.finish_and_clear();
-    utils::log_info("published", &utils::sec(&pb.elapsed()));
+    let role = match &dargs.role {
+        Some(role) => role.clone(),
+        None => role::create(&cfg).await?,
+    };
 
     Ok(())
 }
