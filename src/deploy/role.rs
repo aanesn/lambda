@@ -1,22 +1,40 @@
 use anyhow::Context;
 use aws_config::SdkConfig;
-use aws_sdk_iam::Client as IamClient;
+use aws_sdk_iam::{Client as IamClient, error::SdkError};
 
-const ROLE_NAME: &str = "lambda-role";
 const LAMBDA_BASIC_EXECUTION: &str =
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole";
 
-pub async fn create(cfg: &SdkConfig) -> anyhow::Result<String> {
+pub async fn upsert(cfg: &SdkConfig, role_name: &str) -> anyhow::Result<String> {
     let iam = IamClient::new(cfg);
 
-    // check if role already exists
-    if let Ok(exists) = iam.get_role().role_name(ROLE_NAME).send().await {
-        let role = exists
-            .role
-            .ok_or_else(|| anyhow::anyhow!("missing role in response"))?;
-        return Ok(role.arn().to_string());
+    if let Some(arm) = check_role(&iam, role_name).await? {
+        return Ok(arm);
     }
 
+    let arn = create_role(&iam, role_name).await?;
+
+    attach_policy(&iam, role_name).await?;
+
+    Ok(arn)
+}
+
+async fn check_role(iam: &IamClient, role_name: &str) -> anyhow::Result<Option<String>> {
+    let res = iam.get_role().role_name(role_name).send().await;
+    match res {
+        Ok(curr) => {
+            let role = curr
+                .role
+                .ok_or_else(|| anyhow::anyhow!("missing role in response"))?;
+            let arn = role.arn().to_string();
+            return Ok(Some(arn));
+        }
+        Err(SdkError::ServiceError(e)) if e.err().is_no_such_entity_exception() => Ok(None),
+        Err(_) => anyhow::bail!("failed to fetch role"),
+    }
+}
+
+async fn create_role(iam: &IamClient, role_name: &str) -> anyhow::Result<String> {
     let policy = serde_json::json!({
         "Version": "2012-10-17",
         "Statement": [
@@ -30,22 +48,29 @@ pub async fn create(cfg: &SdkConfig) -> anyhow::Result<String> {
         ]
     });
 
-    let role = iam
+    let res = iam
         .create_role()
-        .role_name(ROLE_NAME)
+        .role_name(role_name)
         .assume_role_policy_document(policy.to_string())
         .send()
         .await
-        .context("failed to create role")?
+        .context("failed to create role")?;
+
+    let role = res
         .role
         .ok_or_else(|| anyhow::anyhow!("missing role in response"))?;
 
+    let arn = role.arn().to_string();
+    return Ok(arn);
+}
+
+async fn attach_policy(iam: &IamClient, role_name: &str) -> anyhow::Result<()> {
     iam.attach_role_policy()
-        .role_name(ROLE_NAME)
+        .role_name(role_name)
         .policy_arn(LAMBDA_BASIC_EXECUTION)
         .send()
         .await
         .context("failed to attach lambda basic execution policy to role")?;
 
-    Ok(role.arn().to_string())
+    Ok(())
 }

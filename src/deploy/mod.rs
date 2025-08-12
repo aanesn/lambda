@@ -1,9 +1,13 @@
-use crate::language::{self, Language};
-use aws_sdk_lambda::types::Runtime;
+use crate::{
+    language::{self, Language},
+    utils,
+};
+use aws_sdk_lambda::{client::Client as LambdaClient, types::Runtime};
 use clap::Parser;
 use std::path::PathBuf;
 
 mod config;
+mod function;
 mod role;
 
 #[derive(Parser)]
@@ -32,18 +36,21 @@ pub struct DeployArgs {
     #[arg(long, default_value = "1")]
     retry: u32,
 
+    #[arg(long, default_value = "lambda")]
+    role_name: String,
+
     #[arg(long)]
-    role: Option<String>,
+    arm64: bool,
 }
 
 pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     let bootstrap = &dargs.output_dir.join("bootstrap.zip");
-    //if !bootstrap.exists() {
-    //    anyhow::bail!(
-    //        "failed to find bootstrap `{}`, run `lambda build` to create it",
-    //        bootstrap.display()
-    //    );
-    //}
+    if !bootstrap.exists() {
+        anyhow::bail!(
+            "failed to find bootstrap `{}`, run `lambda build` to create it",
+            bootstrap.display()
+        );
+    }
 
     let lang = match &dargs.language {
         Some(lang) => lang.clone(),
@@ -69,11 +76,26 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     };
 
     let cfg = config::load(&dargs.region, &dargs.retry).await?;
+    let lambda = LambdaClient::new(&cfg);
+    let arn = role::upsert(&cfg, &dargs.role_name).await?;
 
-    let role = match &dargs.role {
-        Some(role) => role.clone(),
-        None => role::create(&cfg).await?,
-    };
+    let pb = utils::spinner();
+    pb.set_message("publishing...");
+
+    function::publish(
+        &cfg,
+        &lambda,
+        &bootstrap,
+        &name,
+        &runtime,
+        &handler,
+        &arn,
+        &dargs.arm64,
+    )
+    .await?;
+
+    pb.finish_and_clear();
+    utils::log_info("published", &utils::sec(&pb.elapsed()));
 
     Ok(())
 }
