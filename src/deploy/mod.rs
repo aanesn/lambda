@@ -28,6 +28,9 @@ pub struct DeployArgs {
     runtime: Option<Runtime>,
 
     #[arg(long)]
+    role: Option<String>,
+
+    #[arg(long)]
     handler: Option<String>,
 
     #[arg(long)]
@@ -35,9 +38,6 @@ pub struct DeployArgs {
 
     #[arg(long, default_value = "1")]
     retry: u32,
-
-    #[arg(long, default_value = "lambda")]
-    role_name: String,
 
     #[arg(long)]
     arm64: bool,
@@ -77,7 +77,11 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
 
     let cfg = config::load(&dargs.region, &dargs.retry).await?;
     let lambda = LambdaClient::new(&cfg);
-    let arn = role::upsert(&cfg, &dargs.role_name).await?;
+
+    let arn = match &dargs.role {
+        Some(arn) => arn.clone(),
+        None => role::upsert(&cfg).await?,
+    };
 
     let pb = utils::spinner();
     pb.set_message("publishing...");

@@ -2,25 +2,26 @@ use anyhow::Context;
 use aws_config::SdkConfig;
 use aws_sdk_iam::{Client as IamClient, error::SdkError};
 
+const ROLE_NAME: &str = "lambda-role";
 const LAMBDA_BASIC_EXECUTION: &str =
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole";
 
-pub async fn upsert(cfg: &SdkConfig, role_name: &str) -> anyhow::Result<String> {
+pub async fn upsert(cfg: &SdkConfig) -> anyhow::Result<String> {
     let iam = IamClient::new(cfg);
 
-    if let Some(arm) = check_role(&iam, role_name).await? {
+    if let Some(arm) = check_role(&iam).await? {
         return Ok(arm);
     }
 
-    let arn = create_role(&iam, role_name).await?;
+    let arn = create_role(&iam).await?;
 
-    attach_policy(&iam, role_name).await?;
+    attach_policy(&iam).await?;
 
     Ok(arn)
 }
 
-async fn check_role(iam: &IamClient, role_name: &str) -> anyhow::Result<Option<String>> {
-    let res = iam.get_role().role_name(role_name).send().await;
+async fn check_role(iam: &IamClient) -> anyhow::Result<Option<String>> {
+    let res = iam.get_role().role_name(ROLE_NAME).send().await;
     match res {
         Ok(curr) => {
             let role = curr
@@ -34,7 +35,7 @@ async fn check_role(iam: &IamClient, role_name: &str) -> anyhow::Result<Option<S
     }
 }
 
-async fn create_role(iam: &IamClient, role_name: &str) -> anyhow::Result<String> {
+async fn create_role(iam: &IamClient) -> anyhow::Result<String> {
     let policy = serde_json::json!({
         "Version": "2012-10-17",
         "Statement": [
@@ -50,7 +51,7 @@ async fn create_role(iam: &IamClient, role_name: &str) -> anyhow::Result<String>
 
     let res = iam
         .create_role()
-        .role_name(role_name)
+        .role_name(ROLE_NAME)
         .assume_role_policy_document(policy.to_string())
         .send()
         .await
@@ -64,9 +65,9 @@ async fn create_role(iam: &IamClient, role_name: &str) -> anyhow::Result<String>
     return Ok(arn);
 }
 
-async fn attach_policy(iam: &IamClient, role_name: &str) -> anyhow::Result<()> {
+async fn attach_policy(iam: &IamClient) -> anyhow::Result<()> {
     iam.attach_role_policy()
-        .role_name(role_name)
+        .role_name(ROLE_NAME)
         .policy_arn(LAMBDA_BASIC_EXECUTION)
         .send()
         .await
