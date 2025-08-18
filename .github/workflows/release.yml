@@ -56,9 +56,9 @@ jobs:
         run: |
           cd target/${{ matrix.settings.target }}/release
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            7z a lambda-${{ matrix.settings.target }}.zip lambda${{ matrix.settings.ext }}
+            7z a lambda-${{ matrix.settings.target }}.zip lambda.exe
           else
-            zip lambda-${{ matrix.settings.target }}.zip lambda${{ matrix.settings.ext }}
+            zip lambda-${{ matrix.settings.target }}.zip lambda
           fi
         shell: bash
 
