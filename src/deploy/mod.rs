@@ -1,8 +1,9 @@
 use crate::{
+    deploy::function::FunctionOpts,
     language::{self, Language},
     utils,
 };
-use aws_sdk_lambda::{client::Client as LambdaClient, types::Runtime};
+use aws_sdk_lambda::client::Client as LambdaClient;
 use clap::Parser;
 use std::path::PathBuf;
 
@@ -12,32 +13,29 @@ mod role;
 
 #[derive(Parser)]
 pub struct DeployArgs {
+    #[arg(long, short = 'o', default_value = ".lambda")]
+    output_dir: PathBuf,
+
     #[arg(long, alias = "lang")]
     language: Option<Language>,
 
     #[arg(long, default_value = ".")]
     cwd: PathBuf,
 
-    #[arg(long, short = 'o', default_value = ".lambda")]
-    output_dir: PathBuf,
-
     #[arg(long)]
     name: Option<String>,
-
-    #[arg(long)]
-    runtime: Option<Runtime>,
-
-    #[arg(long)]
-    role: Option<String>,
-
-    #[arg(long)]
-    handler: Option<String>,
 
     #[arg(long)]
     region: Option<String>,
 
     #[arg(long, default_value = "1")]
     retry: u32,
+
+    #[arg(long)]
+    role: Option<String>,
+
+    #[command(flatten)]
+    fopts: FunctionOpts,
 
     #[arg(long)]
     arm64: bool,
@@ -65,23 +63,9 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         }
     };
 
-    let runtime = match &dargs.runtime {
-        Some(runtime) => runtime.clone(),
-        None => lang.runtime(),
-    };
-
-    let handler = match &dargs.handler {
-        Some(handler) => handler.clone(),
-        None => lang.handler().to_string(),
-    };
-
     let cfg = config::load(&dargs.region, &dargs.retry).await?;
     let lambda = LambdaClient::new(&cfg);
-
-    let arn = match &dargs.role {
-        Some(arn) => arn.clone(),
-        None => role::upsert(&cfg).await?,
-    };
+    let arn = role::upsert(&cfg).await?;
 
     let pb = utils::spinner();
     pb.set_message("publishing...");
@@ -90,10 +74,10 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
         &cfg,
         &lambda,
         &bootstrap,
+        &lang,
         &name,
-        &runtime,
-        &handler,
         &arn,
+        &dargs.fopts,
         &dargs.arm64,
     )
     .await?;

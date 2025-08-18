@@ -1,34 +1,60 @@
+use crate::language::Language;
+use anyhow::Context;
 use aws_config::SdkConfig;
 use aws_sdk_iam::{error::SdkError, primitives::Blob};
 use aws_sdk_lambda::{
     Client as LambdaClient,
     operation::get_function::GetFunctionOutput,
-    types::{FunctionCode, Runtime},
+    types::{Architecture, FunctionCode, Runtime},
 };
+use clap::Args;
 use std::path::PathBuf;
+
+#[derive(Args)]
+pub struct FunctionOpts {
+    #[arg(long)]
+    runtime: Option<Runtime>,
+
+    #[arg(long)]
+    handler: Option<String>,
+
+    #[arg(long, alias = "desc")]
+    description: Option<String>,
+
+    #[arg(long)]
+    timeout: Option<i32>,
+
+    #[arg(long)]
+    memory: Option<i32>,
+}
 
 pub async fn publish(
     cfg: &SdkConfig,
     lambda: &LambdaClient,
     bootstrap: &PathBuf,
+    lang: &Language,
     name: &str,
-    runtime: &Runtime,
-    handler: &str,
     arn: &str,
+    fopts: &FunctionOpts,
     arm64: &bool,
 ) -> anyhow::Result<()> {
-    let code = read_archive(bootstrap)?;
+    let blob = Blob::new(std::fs::read(bootstrap)?);
 
-    if let Some(curr) = check_function(&lambda, name).await? {}
+    let (arch, arch_str) = if *arm64 {
+        (Architecture::Arm64, "Arm64")
+    } else {
+        (Architecture::X8664, "X86")
+    };
+
+    if let Some(curr) = check_function(&lambda, name).await? {
+        update_function_config(lambda, name, arn, fopts, curr).await?;
+
+        update_function_code(lambda, name, &blob, &arch).await?;
+    } else {
+        create_function(cfg, lambda, lang, name, &blob, arn, &arch, arch_str, fopts).await?;
+    }
 
     Ok(())
-}
-
-fn read_archive(bootstrap: &PathBuf) -> anyhow::Result<FunctionCode> {
-    let buf = std::fs::read(bootstrap)?;
-    let blob = Blob::new(buf);
-    let code = FunctionCode::builder().zip_file(blob).build();
-    Ok(code)
 }
 
 async fn check_function(
@@ -41,4 +67,125 @@ async fn check_function(
         Err(SdkError::ServiceError(e)) if e.err().is_resource_not_found_exception() => Ok(None),
         Err(_) => anyhow::bail!("failed to fetch lambda"),
     }
+}
+
+async fn update_function_config(
+    lambda: &LambdaClient,
+    name: &str,
+    arn: &str,
+    fopts: &FunctionOpts,
+    curr: GetFunctionOutput,
+) -> anyhow::Result<()> {
+    let config = curr
+        .configuration
+        .ok_or_else(|| anyhow::anyhow!("missing function config"))?;
+
+    let mut builder = lambda.update_function_configuration().function_name(name);
+
+    if arn != config.role.unwrap_or_default() {
+        builder = builder.role(arn);
+    }
+
+    if let Some(runtime) = &fopts.runtime {
+        if fopts.runtime != config.runtime {
+            builder = builder.runtime(runtime.clone());
+        }
+    }
+
+    if let Some(handler) = &fopts.handler {
+        if fopts.handler != config.handler {
+            builder = builder.handler(handler.clone());
+        }
+    }
+
+    if let Some(desc) = &fopts.description {
+        if fopts.description != config.description {
+            builder = builder.description(desc.clone());
+        }
+    }
+
+    if let Some(timeout) = &fopts.timeout {
+        if fopts.timeout != config.timeout {
+            builder = builder.timeout(timeout.clone())
+        }
+    }
+
+    if let Some(memory) = &fopts.memory {
+        if fopts.memory != config.memory_size {
+            builder = builder.memory_size(memory.clone())
+        }
+    }
+
+    builder
+        .send()
+        .await
+        .context("failed to update function config")?;
+
+    Ok(())
+}
+
+async fn update_function_code(
+    lambda: &LambdaClient,
+    name: &str,
+    blob: &Blob,
+    arch: &Architecture,
+) -> anyhow::Result<()> {
+    lambda
+        .update_function_code()
+        .function_name(name)
+        .zip_file(blob.clone())
+        .architectures(arch.clone())
+        .send()
+        .await
+        .context("failed to update function code")?;
+
+    Ok(())
+}
+
+async fn create_function(
+    cfg: &SdkConfig,
+    lambda: &LambdaClient,
+    lang: &Language,
+    name: &str,
+    blob: &Blob,
+    arn: &str,
+    arch: &Architecture,
+    arch_str: &str,
+    fopts: &FunctionOpts,
+) -> anyhow::Result<()> {
+    let runtime = match &fopts.runtime {
+        Some(runtime) => runtime.clone(),
+        None => lang.runtime(),
+    };
+
+    let handler = match &fopts.handler {
+        Some(handler) => handler.clone(),
+        None => lang.handler().to_string(),
+    };
+
+    let code = FunctionCode::builder().zip_file(blob.clone()).build();
+
+    let adapter = format!(
+        "arn:aws:lambda:{}:753240598075:layer:LambdaAdapterLayer{}:24",
+        cfg.region().unwrap().as_ref(),
+        arch_str
+    );
+
+    lambda
+        .create_function()
+        .function_name(name)
+        .runtime(runtime)
+        .role(arn)
+        .handler(handler)
+        .code(code)
+        .set_description(fopts.description.clone())
+        .set_timeout(fopts.timeout.clone())
+        .set_memory_size(fopts.memory.clone())
+        .layers(adapter)
+        .architectures(arch.clone())
+        .send()
+        .await
+        .context("failed to create function")?;
+
+    Ok(())
 }
