@@ -4,6 +4,9 @@ on:
     tags:
       - "v*.*.*"
 
+permissions:
+  contents: write # required for creating release
+
 jobs:
   build:
     strategy:
@@ -63,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.settings.target }}
-          path: target/${{ matrix.settings.target }}/release/lambda${{ matrix.settings.ext }}
+          path: target/${{ matrix.settings.target }}/release/lambda-${{ matrix.settings.target }}.zip
 
   publish:
     needs:
