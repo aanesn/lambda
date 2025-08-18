@@ -10,6 +10,7 @@ use std::path::PathBuf;
 mod config;
 mod function;
 mod role;
+mod url;
 
 #[derive(Parser)]
 pub struct DeployArgs {
@@ -39,6 +40,9 @@ pub struct DeployArgs {
 
     #[arg(long)]
     arm64: bool,
+
+    #[arg(long)]
+    disable_function_url: bool,
 }
 
 pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
@@ -85,6 +89,13 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
 
     pb.finish_and_clear();
     utils::log_info("published", &utils::sec(&pb.elapsed()));
+
+    if dargs.disable_function_url {
+        url::delete(&name, &lambda).await?;
+    } else {
+        let url = url::upsert(&name, &lambda).await?;
+        utils::log_info("function url:", &url);
+    }
 
     Ok(())
 }
