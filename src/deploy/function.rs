@@ -4,10 +4,10 @@ use aws_sdk_iam::{error::SdkError, primitives::Blob};
 use aws_sdk_lambda::{
     Client as LambdaClient,
     operation::get_function::GetFunctionOutput,
-    types::{Architecture, FunctionCode, Runtime},
+    types::{Architecture, FunctionCode, LastUpdateStatus, Runtime, State},
 };
 use clap::Args;
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Duration};
 
 #[derive(Args)]
 pub struct FunctionOpts {
@@ -47,6 +47,8 @@ pub async fn publish(
 
     if let Some(curr) = check_function(&lambda, name).await? {
         update_function_config(name, &lambda, arn, fopts, curr).await?;
+
+        wait_for_ready_state(name, &lambda).await?;
 
         update_function_code(name, &lambda, &blob, &arch).await?;
     } else {
@@ -122,6 +124,46 @@ async fn update_function_config(
         .send()
         .await
         .context("failed to update function config")?;
+
+    Ok(())
+}
+
+async fn wait_for_ready_state(name: &str, lambda: &LambdaClient) -> anyhow::Result<()> {
+    for attempt in 1..=5 {
+        tokio::time::sleep(Duration::from_secs(attempt * 2)).await;
+
+        let res = lambda
+            .get_function_configuration()
+            .function_name(name)
+            .send()
+            .await
+            .context("failed to fetch function config")?;
+
+        let state = res
+            .state
+            .ok_or_else(|| anyhow::anyhow!("failed to get function state"))?;
+
+        match (state, res.last_update_status) {
+            (State::Pending, _) => {}
+            (_, Some(LastUpdateStatus::InProgress)) => {}
+            (
+                State::Active | State::Failed | State::Inactive,
+                Some(LastUpdateStatus::Successful | LastUpdateStatus::Failed) | None,
+            ) => break,
+            (State::Active | State::Failed | State::Inactive, other) => {
+                anyhow::bail!("unexpected function status: `{:?}`", other)
+            }
+            (other, _) => {
+                anyhow::bail!("unexpected function state: `{:?}`", other)
+            }
+        };
+
+        if attempt == 5 {
+            anyhow::bail!(
+                "function config didn't update in time, try again in a couple of minutes"
+            );
+        }
+    }
 
     Ok(())
 }
