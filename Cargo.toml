@@ -5,9 +5,9 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
-aws-config = "1.8.3"
-aws-sdk-iam = "1.84.0"
-aws-sdk-lambda = "1.91.0"
+aws-config = { version = "1.8.3", default-features = false, features = ["rt-tokio", "credentials-process", "sso"] }
+aws-sdk-iam = { version = "1.84.0", default-features = false, features = ["rt-tokio"] }
+aws-sdk-lambda = { version = "1.91.0", default-features = false, features = ["rt-tokio"] }
 cargo-zigbuild = "0.20.1"
 clap = { version = "4.5.42", features = ["derive"] }
 crossterm = "0.29.0"
