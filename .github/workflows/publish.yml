@@ -34,11 +34,4 @@ jobs:
           targets: ${{ matrix.settings.target }}
 
       - name: build
-        run: |
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            cargo install cross --git https://github.com/cross-rs/cross
-            cross build --release --target ${{ matrix.settings.target }}
-          else
-            cargo build --release --target ${{ matrix.settings.target }}
-          fi
-        shell: bash
+        run: cargo build --release --target ${{ matrix.settings.target }}
