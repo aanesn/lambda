@@ -16,10 +16,13 @@ jobs:
             target: x86_64-unknown-linux-musl
           - host: windows-latest
             target: x86_64-pc-windows-msvc
+            ext: .exe
           - host: windows-latest
             target: aarch64-pc-windows-msvc
+            ext: .exe
           - host: windows-latest
             target: i686-pc-windows-msvc
+            ext: .exe
 
     name: ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
@@ -42,3 +45,38 @@ jobs:
             cargo build --release --target ${{ matrix.settings.target }}
           fi
         shell: bash
+
+      - name: prepare artifact
+        run: |
+          cd target/${{ matrix.settings.target }}/release
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            7z a lambda-${{ matrix.settings.target }}.zip lambda${{ matrix.settings.ext }}
+          else
+            zip lambda-${{ matrix.settings.target }}.zip lambda${{ matrix.settings.ext }}
+          fi
+        shell: bash
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.settings.target }}
+          path: target/${{ matrix.settings.target }}/release/lambda${{ matrix.settings.ext }}
+
+  publish:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*/*.zip
