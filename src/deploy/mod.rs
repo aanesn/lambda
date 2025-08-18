@@ -3,7 +3,7 @@ use crate::{
     language::{self, Language},
     utils,
 };
-use aws_sdk_lambda::client::Client as LambdaClient;
+use aws_sdk_lambda::Client as LambdaClient;
 use clap::Parser;
 use std::path::PathBuf;
 
@@ -66,17 +66,18 @@ pub async fn deploy(dargs: &DeployArgs) -> anyhow::Result<()> {
     let cfg = config::load(&dargs.region, &dargs.retry).await?;
     let lambda = LambdaClient::new(&cfg);
     let arn = role::upsert(&cfg).await?;
+    let region = cfg.region().unwrap().as_ref();
 
     let pb = utils::spinner();
     pb.set_message("publishing...");
 
     function::publish(
-        &cfg,
-        &lambda,
         &bootstrap,
         &lang,
         &name,
+        &lambda,
         &arn,
+        &region,
         &dargs.fopts,
         &dargs.arm64,
     )

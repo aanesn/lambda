@@ -1,6 +1,5 @@
 use crate::language::Language;
 use anyhow::Context;
-use aws_config::SdkConfig;
 use aws_sdk_iam::{error::SdkError, primitives::Blob};
 use aws_sdk_lambda::{
     Client as LambdaClient,
@@ -29,12 +28,12 @@ pub struct FunctionOpts {
 }
 
 pub async fn publish(
-    cfg: &SdkConfig,
-    lambda: &LambdaClient,
     bootstrap: &PathBuf,
     lang: &Language,
     name: &str,
+    lambda: &LambdaClient,
     arn: &str,
+    region: &str,
     fopts: &FunctionOpts,
     arm64: &bool,
 ) -> anyhow::Result<()> {
@@ -47,11 +46,14 @@ pub async fn publish(
     };
 
     if let Some(curr) = check_function(&lambda, name).await? {
-        update_function_config(lambda, name, arn, fopts, curr).await?;
+        update_function_config(name, &lambda, arn, fopts, curr).await?;
 
-        update_function_code(lambda, name, &blob, &arch).await?;
+        update_function_code(name, &lambda, &blob, &arch).await?;
     } else {
-        create_function(cfg, lambda, lang, name, &blob, arn, &arch, arch_str, fopts).await?;
+        create_function(
+            lang, name, lambda, arn, region, &blob, &arch, arch_str, fopts,
+        )
+        .await?;
     }
 
     Ok(())
@@ -70,8 +72,8 @@ async fn check_function(
 }
 
 async fn update_function_config(
-    lambda: &LambdaClient,
     name: &str,
+    lambda: &LambdaClient,
     arn: &str,
     fopts: &FunctionOpts,
     curr: GetFunctionOutput,
@@ -125,8 +127,8 @@ async fn update_function_config(
 }
 
 async fn update_function_code(
-    lambda: &LambdaClient,
     name: &str,
+    lambda: &LambdaClient,
     blob: &Blob,
     arch: &Architecture,
 ) -> anyhow::Result<()> {
@@ -143,12 +145,12 @@ async fn update_function_code(
 }
 
 async fn create_function(
-    cfg: &SdkConfig,
-    lambda: &LambdaClient,
     lang: &Language,
     name: &str,
-    blob: &Blob,
+    lambda: &LambdaClient,
     arn: &str,
+    region: &str,
+    blob: &Blob,
     arch: &Architecture,
     arch_str: &str,
     fopts: &FunctionOpts,
@@ -167,8 +169,7 @@ async fn create_function(
 
     let adapter = format!(
         "arn:aws:lambda:{}:753240598075:layer:LambdaAdapterLayer{}:24",
-        cfg.region().unwrap().as_ref(),
-        arch_str
+        region, arch_str
     );
 
     lambda
