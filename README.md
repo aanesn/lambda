@@ -1,11 +1,6 @@
-> [!WARNING]  
-> it's still pretty early stages, so i probably wouldn't use it for anything serious
-
-![demo](https://pub-b0a99bf888b34aaf8ebc5b21b7df2dc7.r2.dev/lambda.gif)
-
 ## requirements
 
-you'll need to configure your aws credentials, the easiest way is to install [aws-cli](https://github.com/aws/aws-cli) and run `aws configure`
+this tool assumes your aws credentials are correctly setup, the easiest way to do that is to install [aws-cli](https://github.com/aws/aws-cli) and run `aws configure`
 
 ## installation
 
