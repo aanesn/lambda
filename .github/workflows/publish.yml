@@ -33,10 +33,6 @@ jobs:
           - host: windows-latest
             target: aarch64-pc-windows-msvc
             ext: ".exe"
-          - host: windows-latest
-            target: i686-pc-windows-msvc
-            ext: ".exe"
-
     steps:
       - name: checkout
         uses: actions/checkout@v4
