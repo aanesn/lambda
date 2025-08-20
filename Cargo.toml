@@ -1,13 +1,13 @@
 [package]
 name = "lambda"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
-aws-config = { version = "1.8.3", default-features = false, features = ["rt-tokio", "credentials-process", "sso", "default-https-client"] }
-aws-sdk-iam = { version = "1.84.0", default-features = false, features = ["rt-tokio", "default-https-client"] }
-aws-sdk-lambda = { version = "1.91.0", default-features = false, features = ["rt-tokio", "default-https-client"] }
+aws-config = "1.8.3"
+aws-sdk-iam = "1.84.0"
+aws-sdk-lambda = "1.91.0"
 cargo-zigbuild = "0.20.1"
 clap = { version = "4.5.42", features = ["derive"] }
 crossterm = "0.29.0"
@@ -21,3 +21,6 @@ unicode-xid = "0.2.6"
 uuid = { version = "1.18.0", features = ["v4"] }
 which = "8.0.0"
 zip = "4.3.0"
+
+[patch.crates-io]
+aws-lc-sys = "=0.22.0"
