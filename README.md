@@ -1,6 +1,10 @@
 ## requirements
 
-this tool assumes your aws credentials are correctly setup, the easiest way to do that is to install [aws-cli](https://github.com/aws/aws-cli) and run `aws configure`
+this tool assumes your aws credentials are correctly setup. the easiest way to do that is to install [aws-cli](https://github.com/aws/aws-cli) and run:
+
+```sh
+aws configure
+```
 
 ## installation
 
