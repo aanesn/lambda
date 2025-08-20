@@ -1,5 +1,5 @@
-> [!CAUTION]
-> this is still pretty early stages, so i probably wouldn't use it for anything serious
+> [!WARNING]  
+> it's still pretty early stages, so i probably wouldn't use it for anything serious
 
 ![demo](https://pub-b0a99bf888b34aaf8ebc5b21b7df2dc7.r2.dev/lambda.gif)
 
