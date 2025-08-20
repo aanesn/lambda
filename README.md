@@ -1,3 +1,6 @@
+> [!NOTE]  
+> it's still very early stages, so i would not use this for anything serious
+
 ## requirements
 
 this tool assumes your aws credentials are correctly setup. the easiest way to do that is to install [aws-cli](https://github.com/aws/aws-cli) and run:
