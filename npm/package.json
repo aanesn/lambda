@@ -1,14 +1,11 @@
 {
   "name": "@aanesn/lambda",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "a lambda deployment tool",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/aanesn/lambda"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "bin": {
     "lambda": "run.cjs"

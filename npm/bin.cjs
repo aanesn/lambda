@@ -13,7 +13,7 @@ async function install() {
   if (fs.existsSync(binaryPath)) return;
 
   const target = getTarget();
-  const url = `https://github.com/aanesn/lambda/releases/download/${version}/lambda-${target}.tar.gz`;
+  const url = `https://github.com/aanesn/lambda/releases/download/v${version}/lambda-${target}.tar.gz`;
 
   let res = await fetch(url);
   if (!res.ok) {
