@@ -1,6 +1,6 @@
 [package]
 name = "lambda"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2024"
 
 [dependencies]
@@ -21,6 +21,3 @@ unicode-xid = "0.2.6"
 uuid = { version = "1.18.0", features = ["v4"] }
 which = "8.0.0"
 zip = "4.3.0"
-
-[patch.crates-io]
-aws-lc-sys = "=0.22.0"
