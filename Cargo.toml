@@ -1,13 +1,13 @@
 [package]
 name = "lambda"
-version = "0.1.3"
+version = "1.0.0"
 edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
-aws-config = { version = "1.8.3", default-features = false, features = ["rt-tokio", "credentials-process", "sso"] }
-aws-sdk-iam = { version = "1.84.0", default-features = false, features = ["rt-tokio"] }
-aws-sdk-lambda = { version = "1.91.0", default-features = false, features = ["rt-tokio"] }
+aws-config = { version = "1.8.3", default-features = false, features = ["rt-tokio", "credentials-process", "sso", "default-https-client"] }
+aws-sdk-iam = { version = "1.84.0", default-features = false, features = ["rt-tokio", "default-https-client"] }
+aws-sdk-lambda = { version = "1.91.0", default-features = false, features = ["rt-tokio", "default-https-client"] }
 cargo-zigbuild = "0.20.1"
 clap = { version = "4.5.42", features = ["derive"] }
 crossterm = "0.29.0"
