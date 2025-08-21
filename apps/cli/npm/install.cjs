@@ -1,1 +1,1 @@
-require("./bin.cjs").install();
+require("./bin.cjs").install()

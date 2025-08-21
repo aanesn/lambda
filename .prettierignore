@@ -1,0 +1,8 @@
+apps/landing/static/
+
+# package managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
