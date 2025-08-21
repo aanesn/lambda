@@ -46,9 +46,9 @@ jobs:
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             pip install cargo-zigbuild
-            cargo zigbuild --release --target ${{ matrix.settings.target }}
+            cargo zigbuild --release --target ${{ matrix.settings.target }} -p ld-cli
           else
-            cargo build --release --target ${{ matrix.settings.target }}
+            cargo build --release --target ${{ matrix.settings.target }} -p ld-cli
           fi
         shell: bash
 
@@ -99,6 +99,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: publish to npm
-        run: cd npm && npm publish --provenance
+        run: cd apps/cli/npm && npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

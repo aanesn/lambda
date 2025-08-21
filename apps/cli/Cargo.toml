@@ -1,0 +1,24 @@
+[package]
+name = "ld-cli"
+version = "1.0.9"
+
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ld-core = { path = "../../core" }
+anyhow = { workspace = true }
+cargo-zigbuild = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+
+[[bin]]
+name = "lambda"
+path = "./src/main.rs"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
+opt-level = 's'

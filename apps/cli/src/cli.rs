@@ -1,0 +1,39 @@
+use cargo_zigbuild::Zig;
+use clap::{Parser, Subcommand};
+use ld_core::{
+    build::{BuildArgs, build},
+    deploy::{DeployArgs, deploy},
+    new::{NewArgs, new},
+};
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    #[command(about = "scaffold a new lambda")]
+    New(NewArgs),
+    #[command(about = "compile and package lambda")]
+    Build(BuildArgs),
+    #[command(about = "publish lambda to aws")]
+    Deploy(DeployArgs),
+    #[command(subcommand, hide = true)]
+    Zig(Zig),
+}
+
+pub(crate) async fn run() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+
+    match &cli.command {
+        Command::New(nargs) => new(nargs)?,
+        Command::Build(bargs) => build(bargs)?,
+        Command::Deploy(dargs) => deploy(dargs).await?,
+        Command::Zig(zig) => zig.execute()?,
+    }
+
+    Ok(())
+}
