@@ -1,6 +1,6 @@
 {
 	"name": "@aanesn/lambda",
-	"version": "1.0.9",
+	"version": "1.1.0",
 	"description": "a lambda deployment tool",
 	"license": "MIT",
 	"repository": {
