@@ -1,9 +1,13 @@
 <script lang="ts">
 	import Logomark from "../icons/Logomark.svelte"
 	import Button from "./Button.svelte"
+	import Link from "./Link.svelte"
 </script>
 
 <header class="flex h-20 items-center justify-between">
 	<Logomark />
-	<Button class="duration-300">Start now</Button>
+	<div class="flex items-center gap-x-6">
+		<Button class="duration-300">Start now</Button>
+		<Link class="duration-300" href="/">Docs</Link>
+	</div>
 </header>
