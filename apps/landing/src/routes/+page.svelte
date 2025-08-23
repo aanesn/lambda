@@ -12,7 +12,7 @@
 	<section class="pt-24 lg:pt-44">
 		<div class="flex flex-col items-center gap-y-6 lg:gap-y-8">
 			<h1
-				class="text-center text-5xl font-semibold leading-[1.1] tracking-tight md:text-6xl md:leading-none lg:text-7xl xl:text-[80px]"
+				class="text-center text-5xl font-semibold leading-[1.1] tracking-[-0.4px] md:text-6xl md:leading-none lg:text-7xl xl:text-[80px]"
 			>
 				Lambda is finally<br class="hidden min-[400px]:flex" /> effortless.
 			</h1>
