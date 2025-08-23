@@ -5,7 +5,7 @@
 	let { class: className, ...restProps }: SVGAttributes<SVGElement> = $props()
 </script>
 
-<svg class={cx("size-7 text-white", className)} viewBox="0 0 18.910847 24" {...restProps}>
+<svg class={cx("size-6 text-white", className)} viewBox="0 0 18.910847 24" {...restProps}>
 	<g transform="translate(-3.544577,-0.99999998)">
 		<path
 			fill="currentColor"
