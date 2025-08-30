@@ -7,6 +7,7 @@
 	let gl: WebGLRenderingContext | null
 	let program: WebGLProgram
 	let positionLocation: number
+	let matrixLocation: WebGLUniformLocation | null
 
 	$effect(() => {
 		gl = canvas.getContext("webgl")
@@ -20,6 +21,7 @@
 		program = createProgram(gl, vertexShader, fragmentShader)
 
 		positionLocation = gl.getAttribLocation(program, "a_position")
+		matrixLocation = gl.getUniformLocation(program, "u_matrix")
 
 		init(gl)
 	})
@@ -28,17 +30,15 @@
 	let clientHeight = $state(0)
 
 	$effect(() => {
-		if (!gl) return
-		console.log("ran")
+		if (!gl || !matrixLocation) return
 
 		canvas.width = clientWidth
 		canvas.height = clientHeight
 		gl.viewport(0, 0, canvas.width, canvas.height)
-
 		gl.clearColor(0, 0, 0, 0)
 		gl.clear(gl.COLOR_BUFFER_BIT)
 
-		render(gl, program, positionLocation)
+		render(gl, program, positionLocation, matrixLocation)
 	})
 </script>
 
