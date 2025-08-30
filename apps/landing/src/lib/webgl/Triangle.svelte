@@ -7,6 +7,7 @@
 	let gl: WebGLRenderingContext | null
 	let program: WebGLProgram
 	let positionLocation: number
+	let colorLocation: number
 	let matrixLocation: WebGLUniformLocation | null
 
 	$effect(() => {
@@ -21,6 +22,7 @@
 		program = createProgram(gl, vertexShader, fragmentShader)
 
 		positionLocation = gl.getAttribLocation(program, "a_position")
+		colorLocation = gl.getAttribLocation(program, "a_color")
 		matrixLocation = gl.getUniformLocation(program, "u_matrix")
 
 		init(gl)
@@ -35,10 +37,14 @@
 		canvas.width = clientWidth
 		canvas.height = clientHeight
 		gl.viewport(0, 0, canvas.width, canvas.height)
-		gl.clearColor(0, 0, 0, 0)
-		gl.clear(gl.COLOR_BUFFER_BIT)
 
-		render(gl, program, positionLocation, matrixLocation)
+		gl.clearColor(0, 0, 0, 0)
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+		gl.enable(gl.DEPTH_TEST)
+		gl.enable(gl.CULL_FACE)
+
+		render(gl, program, positionLocation, colorLocation, matrixLocation)
 	})
 </script>
 

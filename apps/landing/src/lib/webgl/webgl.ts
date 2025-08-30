@@ -1,3 +1,4 @@
+import { positions } from "./geometry"
 import * as m4 from "./m4"
 
 export function createShader(gl: WebGLRenderingContext, type: number, source: string) {
@@ -38,25 +39,28 @@ export function createProgram(
 export function init(gl: WebGLRenderingContext) {
 	const positionBuffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-	const positions = [0, 0, 0, 0.5, 0.7, 0]
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+	gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
 }
 
 export function render(
 	gl: WebGLRenderingContext,
 	program: WebGLProgram,
 	positionLocation: number,
+	colorLocation: number,
 	matrixLocation: WebGLUniformLocation
 ) {
 	gl.useProgram(program)
 
 	gl.enableVertexAttribArray(positionLocation)
-	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
+	gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 24, 0)
 
-	let matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-	matrix = m4.translate(matrix, -0.5, 0, 0)
-	matrix = m4.rotateZ(matrix, Math.PI / 2)
+	gl.enableVertexAttribArray(colorLocation)
+	gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 24, 12)
+
+	let matrix = m4.identity()
+	matrix = m4.rotateX(matrix, 0.5)
+	matrix = m4.rotateY(matrix, 0.7)
 	gl.uniformMatrix4fv(matrixLocation, false, matrix)
 
-	gl.drawArrays(gl.TRIANGLES, 0, 3)
+	gl.drawArrays(gl.TRIANGLES, 0, 12)
 }

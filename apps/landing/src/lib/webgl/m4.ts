@@ -1,3 +1,7 @@
+export function identity() {
+	return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+}
+
 export function translate(a: number[], tx: number, ty: number, tz: number) {
 	const b = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1]
 	return multiply(a, b)
