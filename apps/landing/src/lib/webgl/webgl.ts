@@ -1,4 +1,3 @@
-import { positions } from "./geometry"
 import * as m4 from "./m4"
 
 export function createShader(gl: WebGLRenderingContext, type: number, source: string) {
@@ -39,7 +38,28 @@ export function createProgram(
 export function init(gl: WebGLRenderingContext) {
 	const positionBuffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-	gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
+	gl.bufferData(
+		gl.ARRAY_BUFFER,
+		// prettier-ignore
+		new Float32Array([
+            0, 1, 0,            1, 0, 0,
+            -0.8, -0.5, 0.5,    1, 0, 0,
+            0.8, -0.5, 0.5,     1, 0, 0,
+                
+            0, 1, 0,            0, 1, 0,
+            0.8, -0.5, 0.5,     0, 1, 0,
+            0, -0.5, -0.8,      0, 1, 0,
+                
+            0, 1, 0,            0, 0, 1,
+            0, -0.5, -0.8,      0, 0, 1,
+            -0.8, -0.5, 0.5,    0, 0, 1,
+                
+            -0.8, -0.5, 0.5,    1, 1, 0,
+            0, -0.5, -0.8,      1, 1, 0,
+            0.8, -0.5, 0.5,     1, 1, 0,
+        ]),
+		gl.STATIC_DRAW
+	)
 }
 
 export function render(
