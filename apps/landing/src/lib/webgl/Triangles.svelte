@@ -1,17 +1,15 @@
 <script lang="ts">
-	import { createProgram, createShader, init, render } from "./webgl"
+	import { createProgram, createShader } from "./webgl"
 	import vertex from "./vertex.glsl?raw"
 	import fragment from "./fragment.glsl?raw"
+	import * as m4 from "./m4"
 
 	let canvas: HTMLCanvasElement
-	let gl: WebGLRenderingContext | null
-	let program: WebGLProgram
-	let positionLocation: number
-	let colorLocation: number
-	let matrixLocation: WebGLUniformLocation | null
+	let clientWidth = $state(0)
+	let clientHeight = $state(0)
 
 	$effect(() => {
-		gl = canvas.getContext("webgl")
+		const gl = canvas.getContext("webgl")
 		if (!gl) {
 			console.error("webgl is unsupported in your browser")
 			return
@@ -19,32 +17,108 @@
 
 		const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertex)
 		const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragment)
-		program = createProgram(gl, vertexShader, fragmentShader)
+		const program = createProgram(gl, vertexShader, fragmentShader)
 
-		positionLocation = gl.getAttribLocation(program, "a_position")
-		colorLocation = gl.getAttribLocation(program, "a_color")
-		matrixLocation = gl.getUniformLocation(program, "u_matrix")
+		const positionLocation = gl.getAttribLocation(program, "a_position")
+		const colorLocation = gl.getAttribLocation(program, "a_color")
+		const matrixLocation = gl.getUniformLocation(program, "u_matrix")
 
-		init(gl)
-	})
+		const positionBuffer = gl.createBuffer()
+		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+		gl.bufferData(
+			gl.ARRAY_BUFFER,
+			// prettier-ignore
+			new Float32Array([
+                0, 1, 0,            1, 0, 0,
+                -0.8, -0.5, 0.5,    1, 0, 0,
+                0.8, -0.5, 0.5,     1, 0, 0,
+                    
+                0, 1, 0,            0, 1, 0,
+                0.8, -0.5, 0.5,     0, 1, 0,
+                0, -0.5, -0.8,      0, 1, 0,
+                    
+                0, 1, 0,            0, 0, 1,
+                0, -0.5, -0.8,      0, 0, 1,
+                -0.8, -0.5, 0.5,    0, 0, 1,
+                    
+                -0.8, -0.5, 0.5,    1, 1, 0,
+                0, -0.5, -0.8,      1, 1, 0,
+                0.8, -0.5, 0.5,     1, 1, 0,
+            ]),
+			gl.STATIC_DRAW
+		)
 
-	let clientWidth = $state(0)
-	let clientHeight = $state(0)
+		requestAnimationFrame(drawScene)
 
-	$effect(() => {
-		if (!gl || !matrixLocation) return
+		function drawScene(time: number) {
+			if (!gl || !matrixLocation) return
 
-		canvas.width = clientWidth
-		canvas.height = clientHeight
-		gl.viewport(0, 0, canvas.width, canvas.height)
+			time *= 0.001
 
-		gl.clearColor(0, 0, 0, 0)
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+			if (canvas.width !== clientWidth || canvas.height !== clientHeight) {
+				canvas.width = clientWidth
+				canvas.height = clientHeight
+			}
 
-		gl.enable(gl.DEPTH_TEST)
-		gl.enable(gl.CULL_FACE)
+			gl.viewport(0, 0, canvas.width, canvas.height)
 
-		render(gl, program, positionLocation, colorLocation, matrixLocation)
+			gl.clearColor(0, 0, 0, 0)
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+			gl.enable(gl.DEPTH_TEST)
+			gl.enable(gl.CULL_FACE)
+
+			gl.useProgram(program)
+
+			gl.enableVertexAttribArray(positionLocation)
+			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 24, 0)
+
+			gl.enableVertexAttribArray(colorLocation)
+			gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 24, 12)
+
+			const triangles = [
+				{
+					finalPos: [-0.1, 0.5, 0],
+					finalScale: 0.2,
+					baseRot: [0.3, 0.8, 0]
+				},
+				{
+					finalPos: [-0.4, 0, 0],
+					finalScale: 0.3,
+					baseRot: [0.5, 0.7, 0]
+				},
+				{
+					finalPos: [0.5, 0.1, 0],
+					finalScale: 0.3,
+					baseRot: [1.5, 0.3, 0]
+				}
+			]
+
+			for (const triangle of triangles) {
+				let matrix = m4.identity()
+
+				const t = Math.min(time * 0.5, 1)
+
+				const currX = triangle.finalPos[0] * t
+				const currY = triangle.finalPos[1] * t
+				const currZ = triangle.finalPos[2] * t
+
+				const currScale = triangle.finalScale * t
+
+				const currRotX = triangle.baseRot[0] + time
+				const currRotY = triangle.baseRot[1] + time
+
+				matrix = m4.translate(matrix, currX, currY, currZ)
+				matrix = m4.scale(matrix, currScale)
+				matrix = m4.rotateX(matrix, currRotX)
+				matrix = m4.rotateY(matrix, currRotY)
+
+				gl.uniformMatrix4fv(matrixLocation, false, matrix)
+				gl.drawArrays(gl.TRIANGLES, 0, 12)
+			}
+
+			requestAnimationFrame(drawScene)
+		}
 	})
 </script>
 
