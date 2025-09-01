@@ -3,6 +3,7 @@
 	import vertex from "./vertex.glsl?raw"
 	import fragment from "./fragment.glsl?raw"
 	import * as m4 from "./m4"
+	import { easeOut } from "./animation"
 
 	let canvas: HTMLCanvasElement
 	let clientWidth = $state(0)
@@ -97,7 +98,7 @@
 			for (const triangle of triangles) {
 				let matrix = m4.identity()
 
-				const t = Math.min(time * 0.5, 1)
+				const t = easeOut(Math.min(time, 1))
 
 				const currX = triangle.finalPos[0] * t
 				const currY = triangle.finalPos[1] * t
