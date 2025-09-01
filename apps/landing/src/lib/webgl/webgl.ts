@@ -57,11 +57,20 @@ export function render(
 	gl.enableVertexAttribArray(colorLocation)
 	gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 24, 12)
 
-	let matrix = m4.identity()
-	matrix = m4.scale(matrix, 0.3)
-	matrix = m4.rotateX(matrix, 0.5)
-	matrix = m4.rotateY(matrix, 0.7)
-	gl.uniformMatrix4fv(matrixLocation, false, matrix)
+	const triangles = [
+		{ pos: [-0.1, 0.5, 0], scale: 0.2, rotX: 0.3, rotY: 0.8 },
+		{ pos: [-0.4, 0, 0], scale: 0.3, rotX: 0.5, rotY: 0.7 },
+		{ pos: [0.5, 0.1, 0], scale: 0.3, rotX: 1.5, rotY: 0.3 }
+	]
 
-	gl.drawArrays(gl.TRIANGLES, 0, 12)
+	for (const triangle of triangles) {
+		let matrix = m4.identity()
+		matrix = m4.translate(matrix, triangle.pos[0], triangle.pos[1], triangle.pos[2])
+		matrix = m4.scale(matrix, triangle.scale)
+		matrix = m4.rotateX(matrix, triangle.rotX)
+		matrix = m4.rotateY(matrix, triangle.rotY)
+
+		gl.uniformMatrix4fv(matrixLocation, false, matrix)
+		gl.drawArrays(gl.TRIANGLES, 0, 12)
+	}
 }
