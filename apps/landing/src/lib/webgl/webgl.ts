@@ -58,6 +58,7 @@ export function render(
 	gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 24, 12)
 
 	let matrix = m4.identity()
+	matrix = m4.scale(matrix, 0.3)
 	matrix = m4.rotateX(matrix, 0.5)
 	matrix = m4.rotateY(matrix, 0.7)
 	gl.uniformMatrix4fv(matrixLocation, false, matrix)

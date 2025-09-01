@@ -7,8 +7,8 @@ export function translate(a: number[], tx: number, ty: number, tz: number) {
 	return multiply(a, b)
 }
 
-export function scale(a: number[], sx: number, sy: number, sz: number) {
-	const b = [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1]
+export function scale(a: number[], s: number) {
+	const b = [s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1]
 	return multiply(a, b)
 }
 
