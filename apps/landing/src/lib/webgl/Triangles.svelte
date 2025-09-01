@@ -79,37 +79,37 @@
 
 			const triangles = [
 				{
-					finalPos: [-0.1, 0.5, 0],
+					finalPos: [-0.1, 0.5],
 					finalScale: 0.2,
-					baseRot: [0.3, 0.8, 0]
+					baseRot: [0.4, 0.8],
+					sway: 0.6
 				},
 				{
-					finalPos: [-0.4, 0, 0],
+					finalPos: [-0.4, 0],
 					finalScale: 0.3,
-					baseRot: [0.5, 0.7, 0]
+					baseRot: [0, 0.7],
+					sway: 0.4
 				},
 				{
-					finalPos: [0.5, 0.1, 0],
+					finalPos: [0.5, 0.1],
 					finalScale: 0.3,
-					baseRot: [1.5, 0.3, 0]
+					baseRot: [1.1, 0.3],
+					sway: 0.3
 				}
 			]
 
 			for (const triangle of triangles) {
-				let matrix = m4.identity()
-
 				const t = easeOut(Math.min(time, 1))
 
 				const currX = triangle.finalPos[0] * t
 				const currY = triangle.finalPos[1] * t
-				const currZ = triangle.finalPos[2] * t
-
 				const currScale = triangle.finalScale * t
 
-				const currRotX = triangle.baseRot[0] + time
-				const currRotY = triangle.baseRot[1] + time
+				const currRotX = triangle.baseRot[0] + Math.sin(time * triangle.sway) * 0.3 * t
+				const currRotY = triangle.baseRot[1] + Math.sin(time * triangle.sway) * 0.3 * t
 
-				matrix = m4.translate(matrix, currX, currY, currZ)
+				let matrix = m4.identity()
+				matrix = m4.translate(matrix, currX, currY, 0)
 				matrix = m4.scale(matrix, currScale)
 				matrix = m4.rotateX(matrix, currRotX)
 				matrix = m4.rotateY(matrix, currRotY)
