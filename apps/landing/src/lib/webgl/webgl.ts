@@ -35,16 +35,21 @@ export function createProgram(
 
 export function parseObj(text: string) {
 	const vertices: number[] = []
+	const normals: number[] = []
 	const indices: number[] = []
 
 	for (const line of text.split("\n")) {
 		const parts = line.trim().split(/\s+/)
-
 		if (parts[0] === "v") {
 			const x = parseFloat(parts[1])
 			const y = parseFloat(parts[2])
 			const z = parseFloat(parts[3])
 			vertices.push(x, y, z)
+		} else if (parts[0] === "vn") {
+			const x = parseFloat(parts[1])
+			const y = parseFloat(parts[2])
+			const z = parseFloat(parts[3])
+			normals.push(x, y, z)
 		} else if (parts[0] === "f") {
 			const v1 = parseInt(parts[1].split("//")[0]) - 1
 			const v2 = parseInt(parts[2].split("//")[0]) - 1
@@ -53,5 +58,18 @@ export function parseObj(text: string) {
 		}
 	}
 
-	return { vertices, indices }
+	const faceNormals: number[] = []
+	for (const line of text.split("\n")) {
+		const parts = line.trim().split(/\s+/)
+		if (parts[0] === "f") {
+			for (let i = 1; i <= 3; i++) {
+				const normalIndex = parseInt(parts[i].split("//")[1]) - 1
+				faceNormals.push(normals[normalIndex * 3])
+				faceNormals.push(normals[normalIndex * 3 + 1])
+				faceNormals.push(normals[normalIndex * 3 + 2])
+			}
+		}
+	}
+
+	return { vertices, normals: faceNormals, indices }
 }

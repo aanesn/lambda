@@ -22,13 +22,18 @@
 		const program = createProgram(gl, vertexShader, fragmentShader)
 
 		const positionLocation = gl.getAttribLocation(program, "a_position")
+		const normalLocation = gl.getAttribLocation(program, "a_normal")
 		const matrixLocation = gl.getUniformLocation(program, "u_matrix")
 
-		const { vertices, indices } = parseObj(lambda)
+		const { vertices, normals, indices } = parseObj(lambda)
 
 		const positionBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+		const normalBuffer = gl.createBuffer()
+		gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer)
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW)
 
 		const indexBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
@@ -53,8 +58,13 @@
 			gl.enable(gl.CULL_FACE)
 			gl.useProgram(program)
 
+			gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 			gl.enableVertexAttribArray(positionLocation)
-			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 12, 0)
+			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0)
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer)
+			gl.enableVertexAttribArray(normalLocation)
+			gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0)
 
 			const triangles = [
 				{
@@ -88,7 +98,7 @@
 
 				let matrix = m4.identity()
 				matrix = m4.translate(matrix, currX, currY, 0)
-				matrix = m4.scale(matrix, currScale * 0.2)
+				matrix = m4.scale(matrix, currScale * 0.3)
 				matrix = m4.rotateX(matrix, currRotX)
 				matrix = m4.rotateY(matrix, currRotY)
 				gl.uniformMatrix4fv(matrixLocation, false, matrix)

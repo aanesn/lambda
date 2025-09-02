@@ -1,14 +1,41 @@
 export function identity() {
-	return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+	// prettier-ignore
+	return [
+        1, 0, 0, 0, 
+        0, 1, 0, 0, 
+        0, 0, 1, 0, 
+        0, 0, 0, 1
+    ]
+}
+
+export function ortho(
+	left: number,
+	right: number,
+	bottom: number,
+	top: number,
+	near: number,
+	far: number
+) {
+	// prettier-ignore
+	return [
+        2 / (right - left), 0, 0, 0,
+        0, 2 / (top - bottom), 0, 0,
+        0, 0, 2 / (near - far), 0,
+        (left + right) / (left - right),
+        (bottom + top) / (bottom - top),
+        (near + far) / (near - far),
+        1,
+    ]
 }
 
 export function translate(a: number[], tx: number, ty: number, tz: number) {
-	const b = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1]
-	return multiply(a, b)
-}
-
-export function scale(a: number[], s: number) {
-	const b = [s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1]
+	// prettier-ignore
+	const b = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        tx, ty, tz, 1, 
+    ]
 	return multiply(a, b)
 }
 
@@ -16,7 +43,13 @@ export function rotateX(a: number[], angleInRadians: number) {
 	const c = Math.cos(angleInRadians)
 	const s = Math.sin(angleInRadians)
 
-	const b = [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1]
+	// prettier-ignore
+	const b = [
+        1, 0, 0, 0,
+        0, c, s, 0,
+        0, -s, c, 0,
+        0, 0, 0, 1
+    ]
 	return multiply(a, b)
 }
 
@@ -24,7 +57,13 @@ export function rotateY(a: number[], angleInRadians: number) {
 	const c = Math.cos(angleInRadians)
 	const s = Math.sin(angleInRadians)
 
-	const b = [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]
+	// prettier-ignore
+	const b = [
+        c, 0, -s, 0,
+        0, 1, 0, 0,
+        s, 0, c, 0,
+        0, 0, 0, 1
+    ]
 	return multiply(a, b)
 }
 
@@ -32,7 +71,24 @@ export function rotateZ(a: number[], angleInRadians: number) {
 	const c = Math.cos(angleInRadians)
 	const s = Math.sin(angleInRadians)
 
-	const b = [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+	// prettier-ignore
+	const b = [
+        c, s, 0, 0, 
+        -s, c, 0, 0, 
+        0, 0, 1, 0, 
+        0, 0, 0, 1
+    ]
+	return multiply(a, b)
+}
+
+export function scale(a: number[], s: number) {
+	// prettier-ignore
+	const b = [
+        s, 0, 0, 0,
+        0, s, 0, 0,
+        0, 0, s, 0,
+        0, 0, 0, 1,
+    ]
 	return multiply(a, b)
 }
 
