@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { createProgram, createShader } from "./webgl"
+	import { createProgram, createShader, parseObj } from "./webgl"
 	import vertex from "./vertex.glsl?raw"
 	import fragment from "./fragment.glsl?raw"
+	import lambda from "./lambda.obj?raw"
 	import * as m4 from "./m4"
 	import { easeOut } from "./animation"
 
@@ -21,33 +22,17 @@
 		const program = createProgram(gl, vertexShader, fragmentShader)
 
 		const positionLocation = gl.getAttribLocation(program, "a_position")
-		const colorLocation = gl.getAttribLocation(program, "a_color")
 		const matrixLocation = gl.getUniformLocation(program, "u_matrix")
+
+		const { vertices, indices } = parseObj(lambda)
 
 		const positionBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			// prettier-ignore
-			new Float32Array([
-                0, 1, 0,            1, 0, 0,
-                -0.8, -0.5, 0.5,    1, 0, 0,
-                0.8, -0.5, 0.5,     1, 0, 0,
-                    
-                0, 1, 0,            0, 1, 0,
-                0.8, -0.5, 0.5,     0, 1, 0,
-                0, -0.5, -0.8,      0, 1, 0,
-                    
-                0, 1, 0,            0, 0, 1,
-                0, -0.5, -0.8,      0, 0, 1,
-                -0.8, -0.5, 0.5,    0, 0, 1,
-                    
-                -0.8, -0.5, 0.5,    1, 1, 0,
-                0, -0.5, -0.8,      1, 1, 0,
-                0.8, -0.5, 0.5,     1, 1, 0,
-            ]),
-			gl.STATIC_DRAW
-		)
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+		const indexBuffer = gl.createBuffer()
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
 
 		requestAnimationFrame(drawScene)
 
@@ -62,20 +47,14 @@
 			}
 
 			gl.viewport(0, 0, canvas.width, canvas.height)
-
 			gl.clearColor(0, 0, 0, 0)
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
 			gl.enable(gl.DEPTH_TEST)
 			gl.enable(gl.CULL_FACE)
-
 			gl.useProgram(program)
 
 			gl.enableVertexAttribArray(positionLocation)
-			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 24, 0)
-
-			gl.enableVertexAttribArray(colorLocation)
-			gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 24, 12)
+			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 12, 0)
 
 			const triangles = [
 				{
@@ -109,12 +88,12 @@
 
 				let matrix = m4.identity()
 				matrix = m4.translate(matrix, currX, currY, 0)
-				matrix = m4.scale(matrix, currScale)
+				matrix = m4.scale(matrix, currScale * 0.2)
 				matrix = m4.rotateX(matrix, currRotX)
 				matrix = m4.rotateY(matrix, currRotY)
-
 				gl.uniformMatrix4fv(matrixLocation, false, matrix)
-				gl.drawArrays(gl.TRIANGLES, 0, 12)
+
+				gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)
 			}
 
 			requestAnimationFrame(drawScene)

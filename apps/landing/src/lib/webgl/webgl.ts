@@ -32,3 +32,26 @@ export function createProgram(
 
 	return program
 }
+
+export function parseObj(text: string) {
+	const vertices: number[] = []
+	const indices: number[] = []
+
+	for (const line of text.split("\n")) {
+		const parts = line.trim().split(/\s+/)
+
+		if (parts[0] === "v") {
+			const x = parseFloat(parts[1])
+			const y = parseFloat(parts[2])
+			const z = parseFloat(parts[3])
+			vertices.push(x, y, z)
+		} else if (parts[0] === "f") {
+			const v1 = parseInt(parts[1].split("//")[0]) - 1
+			const v2 = parseInt(parts[2].split("//")[0]) - 1
+			const v3 = parseInt(parts[3].split("//")[0]) - 1
+			indices.push(v1, v2, v3)
+		}
+	}
+
+	return { vertices, indices }
+}
