@@ -66,35 +66,35 @@
 			gl.enableVertexAttribArray(normalLocation)
 			gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0)
 
-			const triangles = [
+			const lambdas = [
 				{
-					finalPos: [-0.1, 0.5],
-					finalScale: 0.2,
-					baseRot: [0.4, 0.8],
-					sway: 0.6
+					finalPos: [-0.1, 0.6],
+					finalScale: 0.3,
+					baseRot: [0.6, 0.1],
+					sway: [0.1, 0.2]
 				},
 				{
-					finalPos: [-0.5, 0],
-					finalScale: 0.3,
-					baseRot: [0, 0.7],
-					sway: 0.4
+					finalPos: [-0.6, -0.1],
+					finalScale: 0.5,
+					baseRot: [0.2, 0.8],
+					sway: [0.2, 0.1]
 				},
 				{
-					finalPos: [0.45, 0],
-					finalScale: 0.3,
-					baseRot: [1.1, 0.3],
-					sway: 0.3
+					finalPos: [0.6, 0],
+					finalScale: 0.4,
+					baseRot: [0.2, -0.8],
+					sway: [0.1, -0.2]
 				}
 			]
 
-			for (const triangle of triangles) {
+			for (const lambda of lambdas) {
 				const t = easeOut(Math.min(time, 1))
 
-				const currX = triangle.finalPos[0] * t
-				const currY = triangle.finalPos[1] * t
-				const currScale = triangle.finalScale * t
-				const currRotX = triangle.baseRot[0] + Math.sin(time * triangle.sway) * 0.3 * t
-				const currRotY = triangle.baseRot[1] + Math.sin(time * triangle.sway) * 0.3 * t
+				const currX = lambda.finalPos[0] * t
+				const currY = lambda.finalPos[1] * t
+				const currScale = lambda.finalScale * t
+				const currRotX = lambda.baseRot[0] + Math.sin(time * lambda.sway[0]) * 0.3 * t
+				const currRotY = lambda.baseRot[1] + Math.sin(time * lambda.sway[1]) * 0.3 * t
 
 				let matrix = m4.identity()
 				matrix = m4.translate(matrix, currX, currY, 0)
