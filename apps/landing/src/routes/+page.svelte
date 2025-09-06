@@ -1,7 +1,6 @@
 <script>
 	import Button from "$lib/components/ui/Button.svelte"
 	import Link from "$lib/components/ui/Link.svelte"
-	import Lambdas from "$lib/webgl/Lambdas.svelte"
 </script>
 
 <svelte:head>
@@ -9,7 +8,6 @@
 	<meta name="description" content="a lambda deployment tool" />
 </svelte:head>
 
-<Lambdas />
 <main>
 	<section class="pt-24 lg:pt-44">
 		<div class="flex flex-col items-center gap-y-6 lg:gap-y-8">
