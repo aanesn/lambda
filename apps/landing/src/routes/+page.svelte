@@ -21,7 +21,7 @@
 			</h2>
 			<div class="flex items-center gap-x-6">
 				<Button class="duration-300">Start now</Button>
-				<Link class="duration-300" href="/">Docs</Link>
+				<Link class="duration-300" href="/">Log in</Link>
 			</div>
 		</div>
 	</section>
