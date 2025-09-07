@@ -1,14 +1,6 @@
-[workspace]
-resolver = "3"
-members = ["apps/cli", "core"]
-
-[workspace.package]
+[package]
+name = "lambda"
+version = "0.1.0"
 edition = "2024"
-license = "MIT"
-repository = "https://github.com/aanesn/lambda"
 
-[workspace.dependencies]
-anyhow = "1.0.98"
-cargo-zigbuild = "0.20.1"
-clap = { version = "4.5.42", features = ["derive"] }
-tokio = { version = "1.47.1", features = ["full"] }
+[dependencies]
