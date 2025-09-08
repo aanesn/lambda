@@ -2,6 +2,18 @@
 
 @layer base {
 	body {
-		@apply bg-black text-white;
+		@apply bg-black font-inter text-white;
 	}
+}
+
+@theme {
+	--font-inter: "Inter", sans-serif;
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/fonts/Inter.woff2") format("woff2");
 }
