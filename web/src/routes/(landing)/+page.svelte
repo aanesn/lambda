@@ -16,8 +16,8 @@
 			AWS Lambda without the AWS
 		</h1>
 		<h2 class="w-11/12 max-w-lg text-white/80 lg:text-lg">
-			Deploy Lambda functions using only your favorite web frameworks, no plugins or
-			configuration.
+			Universal Lambda deployment tool integrated with your AWS account, for full control and
+			no markup.
 		</h2>
 		<div class="flex items-center gap-x-4">
 			<Button class="duration-300">Start now</Button>
