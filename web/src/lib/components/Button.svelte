@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cva, cx } from "$lib/utils/cva.config"
 	import type { VariantProps } from "cva"
-	import type { HTMLButtonAttributes } from "svelte/elements"
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements"
 
 	const button = cva({
 		base: "inline-flex shrink-0 items-center justify-center gap-0.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all outline-none",
@@ -19,20 +19,28 @@
 	type Intent = Variants["intent"]
 	type Size = Variants["size"]
 
-	type Props = HTMLButtonAttributes & {
-		intent?: Intent
-		size?: Size
-	}
+	type Props = HTMLButtonAttributes &
+		HTMLAnchorAttributes & {
+			intent?: Intent
+			size?: Size
+		}
 
 	let {
 		class: className,
 		children,
 		intent = "primary",
 		size = "md",
+		href = undefined,
 		...restProps
 	}: Props = $props()
 </script>
 
-<button class={cx(button({ intent, size }), className)} {...restProps}>
-	{@render children?.()}
-</button>
+{#if href}
+	<a class={cx(button({ intent, size }), className)} {href} {...restProps}>
+		{@render children?.()}
+	</a>
+{:else}
+	<button class={cx(button({ intent, size }), className)} {...restProps}>
+		{@render children?.()}
+	</button>
+{/if}
