@@ -25,7 +25,7 @@
 				Start now
 				{@html Chevron}
 			</Button>
-			<Link href="/" class="duration-300">Book a demo</Link>
+			<Link class="duration-300" href="/">Book a demo</Link>
 		</div>
 	</div>
 </section>

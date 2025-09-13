@@ -10,7 +10,7 @@
 	<a href="/">
 		<img src={Logomark} alt="logomark" />
 	</a>
-	<img src={Menu} alt="menu" class="flex lg:hidden" />
+	<img class="flex lg:hidden" src={Menu} alt="menu" />
 	<nav class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-x-6 lg:flex">
 		<Link href="/">Products</Link>
 		<Link href="/">Solutions</Link>
@@ -23,6 +23,6 @@
 			Start now
 			{@html Chevron}
 		</Button>
-		<Link href="/" class="duration-300">Log in</Link>
+		<Link class="duration-300" href="/">Log in</Link>
 	</div>
 </header>
