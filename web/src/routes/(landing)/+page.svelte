@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from "$lib/components/Button.svelte"
 	import Link from "$lib/components/Link.svelte"
+	import Chevron from "$lib/assets/chevron.svg?raw"
 </script>
 
 <svelte:head>
@@ -19,8 +20,11 @@
 			Universal Lambda deployment tool integrated with your AWS account, for full control and
 			no markup.
 		</h2>
-		<div class="flex items-center justify-center gap-x-4 lg:justify-start">
-			<Button class="duration-300">Start now</Button>
+		<div class="flex items-center justify-center gap-x-6 lg:justify-start">
+			<Button class="group duration-300">
+				Start now
+				{@html Chevron}
+			</Button>
 			<Link href="/" class="duration-300">Book a demo</Link>
 		</div>
 	</div>

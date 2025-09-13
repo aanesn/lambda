@@ -3,6 +3,7 @@
 	import Menu from "$lib/assets/menu.svg"
 	import Button from "./Button.svelte"
 	import Link from "./Link.svelte"
+	import Chevron from "$lib/assets/chevron.svg?raw"
 </script>
 
 <header class="relative flex h-[72px] items-center justify-between">
@@ -18,7 +19,10 @@
 		<Link href="/">Pricing</Link>
 	</nav>
 	<div class="hidden items-center gap-x-4 lg:flex">
-		<Button class="duration-300">Start now</Button>
+		<Button class="group duration-300">
+			Start now
+			{@html Chevron}
+		</Button>
 		<Link href="/" class="duration-300">Log in</Link>
 	</div>
 </header>
