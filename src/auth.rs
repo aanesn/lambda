@@ -163,7 +163,7 @@ pub async fn github_callback(
         .context("failed to parse github emails")?
         .into_iter()
         .find(|e| e.primary && e.verified)
-        .ok_or(ApiError::Unauthorized)?
+        .ok_or_else(|| ApiError::Unauthorized)?
         .email;
     let user_id = set_user("github", user.id.to_string(), email, &mut conn).await?;
     let session_id = set_session(&mut conn, user_id).await?;
