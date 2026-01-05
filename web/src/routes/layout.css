@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@layer base {
+	* {
+		@apply border-white/15;
+	}
+	body {
+		@apply bg-black font-inter text-white;
+	}
+}
+
+@theme {
+	--font-inter: "Inter", sans-serif;
+	--font-manrope: "Manrope", sans-serif;
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/fonts/Inter.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: Manrope;
+	font-style: normal;
+	font-weight: 200 800;
+	font-display: swap;
+	src: url("/fonts/Manrope.woff2") format("woff2");
+}

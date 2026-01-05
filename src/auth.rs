@@ -111,7 +111,7 @@ pub async fn google_callback(
     let session_id = set_session(&mut conn, user_id).await?;
     Ok((
         set_cookie(jar, SESSION_ID, session_id, SESSION_ID_MAX_AGE, ctx.prod),
-        Redirect::to("/user"),
+        Redirect::to(&format!("{}/dashboard", ctx.client_url)),
     ))
 }
 
@@ -169,18 +169,22 @@ pub async fn github_callback(
     let session_id = set_session(&mut conn, user_id).await?;
     Ok((
         set_cookie(jar, SESSION_ID, session_id, SESSION_ID_MAX_AGE, ctx.prod),
-        Redirect::to("/user"),
+        Redirect::to(&format!("{}/dashboard", ctx.client_url)),
     ))
 }
 
 async fn logout(
     jar: CookieJar,
     DatabaseConnection(mut conn): DatabaseConnection,
+    State(ctx): State<Ctx>,
 ) -> anyhow::Result<impl IntoResponse, ApiError> {
     if let Some(id) = jar.get(SESSION_ID).map(|c| c.value()) {
         conn.del::<_, ()>(format!("session:{id}")).await?;
     }
-    Ok((jar.remove(SESSION_ID), Redirect::to("/")))
+    Ok((
+        delete_cookie(jar, SESSION_ID, ctx.prod),
+        Redirect::to(&ctx.client_url),
+    ))
 }
 
 fn set_cookie(
@@ -200,6 +204,14 @@ fn set_cookie(
         cookie = cookie.domain(".lambda.new")
     }
     jar.add(cookie)
+}
+
+fn delete_cookie(jar: CookieJar, name: &'static str, prod: bool) -> CookieJar {
+    let mut cookie = Cookie::build(name).path("/");
+    if prod {
+        cookie = cookie.domain(".lambda.new")
+    }
+    jar.remove(cookie)
 }
 
 fn check_csrf_token(jar: &CookieJar, state: &str) -> anyhow::Result<(), ApiError> {

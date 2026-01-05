@@ -1,6 +1,7 @@
 use axum::{Extension, Json};
 use serde::{Deserialize, Serialize};
 
+#[typeshare::typeshare]
 #[derive(Deserialize, Serialize, Clone)]
 pub struct User {
     pub id: String,
