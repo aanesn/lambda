@@ -21,7 +21,7 @@
 	<meta name="description" content="Login or register" />
 </svelte:head>
 
-<div class="mx-auto max-w-md pt-16">
+<div class="mx-auto max-w-lg px-6 pt-16">
 	<div class="mb-5 ml-10">
 		{@html Logomark}
 	</div>
