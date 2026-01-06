@@ -34,6 +34,7 @@ pub async fn google(
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("openid".to_owned()))
         .add_scope(Scope::new("email".to_owned()))
+        .add_scope(Scope::new("profile".to_owned()))
         .url();
     Ok((
         set_cookie(
@@ -79,6 +80,8 @@ struct GoogleUser {
     sub: String,
     email: String,
     email_verified: bool,
+    name: Option<String>,
+    picture: Option<String>,
 }
 
 pub async fn google_callback(
@@ -107,7 +110,20 @@ pub async fn google_callback(
     if !user.email_verified {
         return Err(ApiError::Unauthorized);
     }
-    let user_id = set_user("google", user.sub, user.email, &mut conn).await?;
+    let name = user
+        .name
+        .filter(|n| !n.is_empty())
+        .or_else(|| user.email.split('@').next().map(|s| s.to_owned()))
+        .context("invalid google email format")?;
+    let user_id = set_user(
+        "google",
+        user.sub,
+        user.email,
+        name,
+        user.picture,
+        &mut conn,
+    )
+    .await?;
     let session_id = set_session(&mut conn, user_id).await?;
     Ok((
         set_cookie(jar, SESSION_ID, session_id, SESSION_ID_MAX_AGE, ctx.prod),
@@ -118,6 +134,9 @@ pub async fn google_callback(
 #[derive(Deserialize)]
 struct GithubUser {
     id: i64,
+    login: String,
+    name: Option<String>,
+    avatar_url: String,
 }
 
 #[derive(Deserialize)]
@@ -165,7 +184,16 @@ pub async fn github_callback(
         .find(|e| e.primary && e.verified)
         .ok_or_else(|| ApiError::Unauthorized)?
         .email;
-    let user_id = set_user("github", user.id.to_string(), email, &mut conn).await?;
+    let name = user.name.filter(|n| !n.is_empty()).unwrap_or(user.login);
+    let user_id = set_user(
+        "github",
+        user.id.to_string(),
+        email,
+        name,
+        Some(user.avatar_url),
+        &mut conn,
+    )
+    .await?;
     let session_id = set_session(&mut conn, user_id).await?;
     Ok((
         set_cookie(jar, SESSION_ID, session_id, SESSION_ID_MAX_AGE, ctx.prod),
@@ -229,6 +257,8 @@ async fn set_user(
     provider: &str,
     provider_id: String,
     email: String,
+    name: String,
+    avatar_url: Option<String>,
     conn: &mut bb8::PooledConnection<'static, redis::Client>,
 ) -> anyhow::Result<String> {
     let provider_key = format!("{provider}:{provider_id}");
@@ -243,6 +273,8 @@ async fn set_user(
     let user = User {
         id: id.clone(),
         email,
+        name,
+        avatar_url,
     };
     conn.set::<_, _, ()>(format!("user:{id}"), serde_json::to_string(&user)?)
         .await?;

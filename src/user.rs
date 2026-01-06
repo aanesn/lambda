@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 pub struct User {
     pub id: String,
     pub email: String,
+    pub name: String,
+    pub avatar_url: Option<String>,
 }
 
 pub async fn get(Extension(user): Extension<User>) -> Json<User> {
