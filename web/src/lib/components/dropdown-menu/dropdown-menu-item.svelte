@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cx } from "$lib/utils"
 	import { DropdownMenu } from "bits-ui"
+	import { cx } from "$lib/utils"
 
 	let { class: className, ...restProps }: DropdownMenu.ItemProps = $props()
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import { cva, cx } from "$lib/utils"
 	import type { VariantProps } from "cva"
 	import type { HTMLAnchorAttributes } from "svelte/elements"
+	import { cva, cx } from "$lib/utils"
 
 	export const linkVariants = cva({
 		base: "inline-flex shrink-0 items-center justify-center rounded-full text-sm whitespace-nowrap transition-all outline-none",

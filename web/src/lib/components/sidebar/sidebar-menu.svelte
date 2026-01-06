@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cx } from "$lib/utils"
 	import type { HTMLAttributes } from "svelte/elements"
+	import { cx } from "$lib/utils"
 
 	let { class: className, children, ...restProps }: HTMLAttributes<HTMLUListElement> = $props()
 </script>

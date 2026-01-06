@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { cx } from "$lib/utils"
 	import type { HTMLAttributes } from "svelte/elements"
+	import { cx } from "$lib/utils"
 	import { useSidebar } from "./context.svelte"
 
 	let { class: className, children, ...restProps }: HTMLAttributes<HTMLButtonElement> = $props()

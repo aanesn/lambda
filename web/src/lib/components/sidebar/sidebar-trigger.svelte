@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Button from "$lib/components/Button.svelte"
 	import type { ComponentProps } from "svelte"
-	import { useSidebar } from "./context.svelte"
 	import Sidebar from "$lib/assets/sidebar.svg?raw"
+	import Button from "$lib/components/Button.svelte"
+	import { useSidebar } from "./context.svelte"
 
 	let {
 		class: className,

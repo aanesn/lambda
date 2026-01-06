@@ -19,13 +19,13 @@
 </script>
 
 <script lang="ts">
-	import * as Tooltip from "$lib/components/tooltip"
-	import { cx, cva } from "$lib/utils"
 	import { mergeProps } from "bits-ui"
+	import type { VariantProps } from "cva"
 	import type { ComponentProps, Snippet } from "svelte"
 	import type { HTMLAttributes } from "svelte/elements"
+	import * as Tooltip from "$lib/components/tooltip"
+	import { cva, cx } from "$lib/utils"
 	import { useSidebar } from "./context.svelte"
-	import type { VariantProps } from "cva"
 
 	let {
 		class: className,

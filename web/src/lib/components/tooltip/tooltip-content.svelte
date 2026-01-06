@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Tooltip } from "bits-ui"
-	import { cx } from "$lib/utils.js"
 	import type { ComponentProps } from "svelte"
+	import { cx } from "$lib/utils.js"
 
 	let {
 		class: className,

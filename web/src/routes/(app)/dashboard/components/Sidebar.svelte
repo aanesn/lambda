@@ -1,18 +1,18 @@
 <script lang="ts">
-	import * as Sidebar from "$lib/components/sidebar"
-	import * as DropdownMenu from "$lib/components/dropdown-menu"
-	import * as Avatar from "$lib/components/avatar"
-	import Projects from "$lib/assets/projects.svg?raw"
-	import Domains from "$lib/assets/domains.svg?raw"
 	import Analytics from "$lib/assets/analytics.svg?raw"
 	import ChevronsUpDown from "$lib/assets/chevrons-up-down.svg?raw"
+	import Domains from "$lib/assets/domains.svg?raw"
+	import Logomark from "$lib/assets/logomark.svg?raw"
 	import Logout from "$lib/assets/logout.svg?raw"
 	import PlusFilled from "$lib/assets/plus-filled.svg?raw"
 	import Plus from "$lib/assets/plus.svg?raw"
-	import Logomark from "$lib/assets/logomark.svg?raw"
-	import { page } from "$app/state"
+	import Projects from "$lib/assets/projects.svg?raw"
 	import type { User } from "$lib/bindings"
+	import * as Avatar from "$lib/components/avatar"
+	import * as DropdownMenu from "$lib/components/dropdown-menu"
+	import * as Sidebar from "$lib/components/sidebar"
 	import { apiUrl } from "$lib/utils"
+	import { page } from "$app/state"
 
 	let { user }: { user: User | null } = $props()
 

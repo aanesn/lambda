@@ -1,5 +1,5 @@
-import { IsMobile } from "$lib/utils"
 import { getContext, setContext } from "svelte"
+import { IsMobile } from "$lib/utils"
 
 type Getter<T> = () => T
 

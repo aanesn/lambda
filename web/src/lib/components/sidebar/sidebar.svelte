@@ -1,11 +1,12 @@
 <script lang="ts">
+	import type { HTMLAttributes } from "svelte/elements"
 	import * as Sheet from "$lib/components/sheet"
 	import { cx } from "$lib/utils"
-	import type { HTMLAttributes } from "svelte/elements"
 	import { SIDEBAR_WIDTH } from "./constants"
 	import { useSidebar } from "./context.svelte"
 
 	let { class: className, children, ...restProps }: HTMLAttributes<HTMLDivElement> = $props()
+
 	const sidebar = useSidebar()
 </script>
 

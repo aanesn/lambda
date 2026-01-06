@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { cx } from "$lib/utils"
 	import { DropdownMenu } from "bits-ui"
 	import type { ComponentProps } from "svelte"
+	import { cx } from "$lib/utils"
 
 	let {
 		sideOffset = 8,

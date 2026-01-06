@@ -15,11 +15,10 @@
 
 <script lang="ts">
 	import { Dialog } from "bits-ui"
-	import type { Snippet } from "svelte"
-	import SheetOverlay from "./sheet-overlay.svelte"
-	import { cx, cva } from "$lib/utils"
-	import type { ComponentProps } from "svelte"
 	import type { VariantProps } from "cva"
+	import type { ComponentProps, Snippet } from "svelte"
+	import { cva, cx } from "$lib/utils"
+	import SheetOverlay from "./sheet-overlay.svelte"
 
 	let {
 		class: className,

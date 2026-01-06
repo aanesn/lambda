@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { LayoutProps } from "./$types"
-	import { goto } from "$app/navigation"
 	import * as Sidebar from "$lib/components/sidebar"
-	import AppSidebar from "./components/Sidebar.svelte"
+	import { goto } from "$app/navigation"
+	import type { LayoutProps } from "./$types"
 	import Header from "./components/Header.svelte"
+	import AppSidebar from "./components/Sidebar.svelte"
 
 	let { data, children }: LayoutProps = $props()
 

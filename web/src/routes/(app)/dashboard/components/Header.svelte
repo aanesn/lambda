@@ -1,10 +1,11 @@
 <script lang="ts">
+	import * as Breadcrumb from "$lib/components/breadcrumb"
 	import Separator from "$lib/components/Separator.svelte"
 	import * as Sidebar from "$lib/components/sidebar"
-	import * as Breadcrumb from "$lib/components/breadcrumb"
+	import { getBreadcrumbs } from "$lib/utils"
 	import { page } from "$app/state"
 
-	let segments = $derived(page.url.pathname.split("/").filter(Boolean).slice(1))
+	let breadcrumbs = $derived(getBreadcrumbs(page.url.pathname))
 </script>
 
 <header
@@ -14,19 +15,15 @@
 		<Sidebar.Trigger />
 		<Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4" />
 		<Breadcrumb.List>
-			{#each segments as segment, i}
-				{@const title =
-					segment.charAt(0).toUpperCase() + segment.slice(1).replaceAll("-", " ")}
+			{#each breadcrumbs as { title, href }, i}
 				<Breadcrumb.Item>
-					{#if i === segments.length - 1}
+					{#if i === breadcrumbs.length - 1}
 						<Breadcrumb.Page>{title}</Breadcrumb.Page>
 					{:else}
-						<Breadcrumb.Link href={`/dashboard/${segments.slice(0, i + 1).join("/")}`}>
-							{title}
-						</Breadcrumb.Link>
+						<Breadcrumb.Link {href}>{title}</Breadcrumb.Link>
 					{/if}
 				</Breadcrumb.Item>
-				{#if i < segments.length - 1}
+				{#if i < breadcrumbs.length - 1}
 					<Breadcrumb.Separator />
 				{/if}
 			{/each}

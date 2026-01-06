@@ -2,8 +2,8 @@
 	import Logomark from "$lib/assets/logomark.svg?raw"
 	import Menu from "$lib/assets/menu.svg?raw"
 	import Button from "$lib/components/Button.svelte"
-	import Link from "$lib/components/Link.svelte"
 	import * as DropdownMenu from "$lib/components/dropdown-menu"
+	import Link from "$lib/components/Link.svelte"
 
 	const navItems = [
 		{

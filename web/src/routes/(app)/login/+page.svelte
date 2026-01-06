@@ -1,13 +1,13 @@
 <script lang="ts">
-	import * as Card from "$lib/components/card"
-	import Logomark from "$lib/assets/logomark.svg?raw"
-	import Google from "$lib/assets/google.svg?raw"
 	import Github from "$lib/assets/github.svg?raw"
+	import Google from "$lib/assets/google.svg?raw"
+	import Logomark from "$lib/assets/logomark.svg?raw"
 	import Button from "$lib/components/Button.svelte"
-	import { apiUrl } from "$lib/utils"
+	import * as Card from "$lib/components/card"
 	import Link from "$lib/components/Link.svelte"
-	import type { PageProps } from "./$types"
+	import { apiUrl } from "$lib/utils"
 	import { goto } from "$app/navigation"
+	import type { PageProps } from "./$types"
 
 	let { data }: PageProps = $props()
 
