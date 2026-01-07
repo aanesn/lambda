@@ -4,9 +4,7 @@
 		variants: {
 			intent: {
 				primary:
-					"hover:bg-white/10 active:bg-white/10 data-[active=true]:bg-white/10 data-[active=true]:font-medium data-[state=open]:hover:bg-white/10",
-				secondary:
-					"group-data-[state=expanded]:hover:bg-white/10 group-data-[state=expanded]:active:bg-white/10 data-[active=true]:font-medium group-data-[state=expanded]:data-[active=true]:bg-white/10 group-data-[state=expanded]:data-[state=open]:hover:bg-white/10"
+					"hover:bg-neutral-900 active:bg-neutral-900 data-[active=true]:bg-neutral-900 data-[state=open]:hover:bg-neutral-900"
 			},
 			size: {
 				md: "h-8 rounded-lg p-1.5 group-data-[state=collapsed]:p-1.5!",

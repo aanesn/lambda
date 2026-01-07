@@ -16,6 +16,8 @@
 	<AppSidebar user={data.user} />
 	<Sidebar.Inset>
 		<Header />
-		{@render children()}
+		<div class="flex flex-1 flex-col border bg-neutral-950 md:rounded-tl-3xl">
+			{@render children()}
+		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>

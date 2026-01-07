@@ -6,7 +6,7 @@
 </script>
 
 <div
-	class={cx("flex flex-col gap-6 rounded-2xl border bg-black py-6 shadow-sm", className)}
+	class={cx("flex flex-col gap-6 rounded-3xl border bg-neutral-950 py-6 shadow-sm", className)}
 	{...restProps}
 >
 	{@render children?.()}

@@ -19,7 +19,7 @@ export class IsMobile extends MediaQuery {
 	}
 }
 
-export function getBreadcrumbs(pathname: string, baseRoute = "/dashboard") {
+export function getBreadcrumbs(pathname: string, baseRoute: string) {
 	const segments = pathname.split("/").filter(Boolean).slice(1)
 	return segments.map((segment, i) => ({
 		title: segment.charAt(0).toUpperCase() + segment.slice(1).replaceAll("-", " "),

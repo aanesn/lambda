@@ -23,7 +23,7 @@
 	const dropdownMenuItems = [{ title: "Log in", href: "/login" }, ...navItems]
 </script>
 
-<header class="relative flex h-16 items-center justify-between lg:h-18">
+<header class="relative flex h-16 items-center justify-between lg:h-20">
 	<a href="/">
 		{@html Logomark}
 	</a>
@@ -32,6 +32,7 @@
 			<Link {href}>{title}</Link>
 		{/each}
 	</nav>
+	<Button intent="secondary" class="hidden duration-300 lg:flex" href="/login">Log in</Button>
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger class="flex lg:hidden">
 			{@html Menu}
@@ -48,5 +49,4 @@
 			{/each}
 		</DropdownMenu.Content>
 	</DropdownMenu.Root>
-	<Button intent="secondary" class="hidden duration-300 lg:flex" href="/login">Log in</Button>
 </header>

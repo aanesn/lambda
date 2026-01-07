@@ -3,7 +3,7 @@
 
 @layer base {
 	* {
-		@apply border-white/15;
+		@apply border-white/10;
 	}
 	body {
 		@apply bg-black font-inter text-white;

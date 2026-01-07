@@ -32,7 +32,7 @@
 		></div>
 		<div
 			class={cx(
-				"fixed inset-y-0 start-0 z-10 hidden h-svh w-(--sidebar-width) border-e transition-[left,right,width] duration-200 ease-linear group-data-[state=collapsed]:w-(--sidebar-width-icon) md:flex",
+				"fixed inset-y-0 start-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear group-data-[state=collapsed]:w-(--sidebar-width-icon) md:flex",
 				className
 			)}
 			{...restProps}

@@ -13,7 +13,7 @@
 		<h1 class="font-manrope text-4xl font-semibold md:text-5xl lg:text-6xl">
 			Lambda is finally <br /> effortless.
 		</h1>
-		<h2 class="max-w-md text-white/70 lg:text-lg">
+		<h2 class="max-w-md text-neutral-400 lg:text-lg">
 			Deploy Lambda functions using your favorite web framework without wrestling with the
 			console.
 		</h2>
