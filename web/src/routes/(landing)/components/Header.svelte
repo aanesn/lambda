@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Logomark from "$lib/assets/logomark.svg?raw"
-	import Menu from "$lib/assets/menu.svg?raw"
+	import Sidebar from "$lib/assets/sidebar.svg?raw"
 	import Button from "$lib/components/Button.svelte"
-	import * as DropdownMenu from "$lib/components/dropdown-menu"
 	import Link from "$lib/components/Link.svelte"
+	import * as Sheet from "$lib/components/sheet"
+	import { SIDEBAR_WIDTH } from "$lib/utils"
 
 	const navItems = [
 		{
@@ -20,7 +21,7 @@
 		}
 	]
 
-	const dropdownMenuItems = [{ title: "Log in", href: "/login" }, ...navItems]
+	const sheetItems = [{ title: "Log in", href: "/login" }, ...navItems]
 </script>
 
 <header class="relative flex h-16 items-center justify-between lg:h-20">
@@ -33,20 +34,26 @@
 		{/each}
 	</nav>
 	<Button intent="secondary" class="hidden duration-300 lg:flex" href="/login">Log in</Button>
-	<DropdownMenu.Root>
-		<DropdownMenu.Trigger class="flex lg:hidden">
-			{@html Menu}
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content class="flex flex-col lg:hidden">
-			{#each dropdownMenuItems as { title, href }}
-				<DropdownMenu.Item>
-					{#snippet child({ props })}
-						<a {...props} {href}>
-							{title}
-						</a>
-					{/snippet}
-				</DropdownMenu.Item>
-			{/each}
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+	<Sheet.Root>
+		<Sheet.Trigger class="flex lg:hidden">
+			{#snippet child({ props })}
+				<Button {...props} intent="ghost" size="icon">
+					{@html Sidebar}
+				</Button>
+			{/snippet}
+		</Sheet.Trigger>
+		<Sheet.Content
+			class="flex w-(--sidebar-width) p-2 lg:hidden"
+			style="--sidebar-width: {SIDEBAR_WIDTH};"
+		>
+			<Sheet.Header>
+				{@html Logomark}
+			</Sheet.Header>
+			<div class="flex h-full w-full flex-col items-start gap-2 px-4">
+				{#each sheetItems as { title, href }}
+					<Link {href} class="text-base">{title}</Link>
+				{/each}
+			</div>
+		</Sheet.Content>
+	</Sheet.Root>
 </header>

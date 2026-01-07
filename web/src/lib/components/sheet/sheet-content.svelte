@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	export const sheetVariants = cva({
-		base: "fixed z-50 flex flex-col gap-4 bg-black shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
+		base: "fixed z-50 flex flex-col gap-4 bg-neutral-950 shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
 		variants: {
 			side: {
 				top: "inset-x-0 top-0 h-auto border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
@@ -22,7 +22,7 @@
 
 	let {
 		class: className,
-		side = "right",
+		side = "left",
 		portalProps,
 		children,
 		...restProps

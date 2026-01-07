@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements"
 	import * as Sheet from "$lib/components/sheet"
-	import { cx } from "$lib/utils"
-	import { SIDEBAR_WIDTH } from "./constants"
+	import { cx, SIDEBAR_WIDTH } from "$lib/utils"
 	import { useSidebar } from "./context.svelte"
 
 	let { class: className, children, ...restProps }: HTMLAttributes<HTMLDivElement> = $props()
@@ -15,11 +14,7 @@
 		bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)}
 		{...restProps}
 	>
-		<Sheet.Content
-			class="w-(--sidebar-width) bg-black p-0"
-			style="--sidebar-width: {SIDEBAR_WIDTH};"
-			side="left"
-		>
+		<Sheet.Content class="w-(--sidebar-width) p-0" style="--sidebar-width: {SIDEBAR_WIDTH};">
 			<div class="flex h-full w-full flex-col">
 				{@render children?.()}
 			</div>
@@ -37,7 +32,7 @@
 			)}
 			{...restProps}
 		>
-			<div class="flex h-full w-full flex-col bg-black">
+			<div class="flex h-full w-full flex-col bg-neutral-950">
 				{@render children?.()}
 			</div>
 		</div>

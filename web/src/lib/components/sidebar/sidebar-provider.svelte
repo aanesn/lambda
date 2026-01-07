@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements"
 	import * as Tooltip from "$lib/components/tooltip"
-	import { cx } from "$lib/utils"
-	import { SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from "./constants"
+	import { cx, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from "$lib/utils"
 	import { setSidebar } from "./context.svelte"
 
 	let {

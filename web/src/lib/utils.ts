@@ -26,3 +26,6 @@ export function getBreadcrumbs(pathname: string, baseRoute: string) {
 		href: `${baseRoute}/${segments.slice(0, i + 1).join("/")}`
 	}))
 }
+
+export const SIDEBAR_WIDTH = "16rem"
+export const SIDEBAR_WIDTH_ICON = "3rem"
