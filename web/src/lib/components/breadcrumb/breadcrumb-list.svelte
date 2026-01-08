@@ -7,7 +7,7 @@
 
 <ol
 	class={cx(
-		"flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-neutral-400 sm:gap-2.5",
+		"flex flex-wrap items-center gap-2 text-sm wrap-break-word text-neutral-400",
 		className
 	)}
 	{...restProps}

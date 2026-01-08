@@ -5,6 +5,6 @@
 	let { class: className, children, ...restProps }: HTMLAttributes<HTMLElement> = $props()
 </script>
 
-<div class={cx("relative flex w-full min-w-0 flex-col p-2", className)} {...restProps}>
+<div class={cx("relative flex w-full min-w-0 flex-col px-2", className)} {...restProps}>
 	{@render children?.()}
 </div>

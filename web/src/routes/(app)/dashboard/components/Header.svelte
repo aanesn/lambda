@@ -9,10 +9,10 @@
 </script>
 
 <header
-	class="flex h-16 shrink-0 items-center gap-1.5 bg-neutral-950 px-4 transition-[width,height] ease-linear group-has-data-[state=collapsed]/sidebar-wrapper:h-12 md:px-0"
+	class="flex h-16 shrink-0 items-center gap-2 bg-neutral-950 px-4 transition-[width,height] ease-linear group-has-data-[state=collapsed]/sidebar-wrapper:h-12 md:px-0"
 >
 	<Sidebar.Trigger />
-	<Separator orientation="vertical" class="me-1.5 data-[orientation=vertical]:h-4" />
+	<Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4" />
 	<Breadcrumb.List>
 		{#each breadcrumbs as { title, href }, i}
 			<Breadcrumb.Item>
