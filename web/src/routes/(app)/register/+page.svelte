@@ -15,24 +15,23 @@
 		data.user && goto("/dashboard", { replaceState: true })
 	})
 
-	let curr = $state(1)
+	let curr = $state(0)
 </script>
 
 <svelte:head>
-	<title>Login | Lambda.new</title>
-	<meta name="description" content="Log in to your account" />
+	<title>Register | Lambda.new</title>
+	<meta name="description" content="Create your account" />
 </svelte:head>
 
-<Stepper.Root bind:curr heights={[280, 188]}>
+<Stepper.Root bind:curr heights={[280]}>
 	<Stepper.Bg />
-	<Stepper.Title>Log in</Stepper.Title>
+	<Stepper.Title>Register</Stepper.Title>
 	<Stepper.Content>
-		<Stepper.Nav items={["Select a provider", "Paste your AWS ARN"]} />
 		<Stepper.Item i={0}>
 			<Card.Root>
 				<Card.Header class="text-center">
-					<Card.Title class="text-lg">Log in to your account</Card.Title>
-					<Card.Description>Select a provider to log in to your account</Card.Description>
+					<Card.Title class="text-lg">Create your account</Card.Title>
+					<Card.Description>Select a provider to create your account</Card.Description>
 				</Card.Header>
 				<Card.Content class="flex flex-col items-center gap-y-3">
 					<Button
@@ -56,23 +55,9 @@
 				</Card.Content>
 				<Card.Footer class="justify-center">
 					<span class="text-sm text-neutral-400">
-						Don't have an account?
-						<Link intent="underline" href="/register">Create account</Link>
+						Already have an account?
+						<Link intent="underline" href="/login">Log in</Link>
 					</span>
-				</Card.Footer>
-			</Card.Root>
-		</Stepper.Item>
-		<Stepper.Item i={1}>
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Card Title</Card.Title>
-					<Card.Description>Card Description</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<p>Card Content</p>
-				</Card.Content>
-				<Card.Footer>
-					<p>Card Footer</p>
 				</Card.Footer>
 			</Card.Root>
 		</Stepper.Item>

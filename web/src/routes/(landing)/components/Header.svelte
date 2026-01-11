@@ -21,7 +21,11 @@
 		}
 	]
 
-	const sheetItems = [{ title: "Log in", href: "/login" }, ...navItems]
+	const sheetItems = [
+		{ title: "Start now", href: "/register" },
+		{ title: "Log in", href: "/login" },
+		...navItems
+	]
 </script>
 
 <header class="relative flex h-16 items-center justify-between lg:h-20">

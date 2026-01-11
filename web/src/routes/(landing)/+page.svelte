@@ -18,7 +18,7 @@
 			console.
 		</h2>
 		<div class="flex items-center gap-x-4">
-			<Button class="duration-300" href="/login">Start now</Button>
+			<Button class="duration-300" href="/register">Start now</Button>
 			<Link class="duration-300" href="/docs">Documentation</Link>
 		</div>
 	</div>

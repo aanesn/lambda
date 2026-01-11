@@ -7,8 +7,8 @@
 		base: "inline-flex shrink-0 items-center justify-center rounded-full text-sm whitespace-nowrap transition-all outline-none",
 		variants: {
 			intent: {
-				primary: "hover:text-white/80",
-				underline: "underline hover:text-white/80"
+				primary: "text-white hover:text-white/80",
+				underline: "text-white underline hover:text-white/80"
 			}
 		}
 	})
