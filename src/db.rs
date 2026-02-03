@@ -1,11 +1,12 @@
-use crate::error::AppError;
+use crate::{Ctx, error::AppError};
 use axum::{
     extract::{FromRef, FromRequestParts},
     http::request::Parts,
 };
 
 pub type ConnectionPool = bb8::Pool<redis::Client>;
-pub struct DatabaseConnection(bb8::PooledConnection<'static, redis::Client>);
+pub type Connection = bb8::PooledConnection<'static, redis::Client>;
+pub struct DatabaseConnection(pub Connection);
 
 impl<S> FromRequestParts<S> for DatabaseConnection
 where
@@ -15,5 +16,11 @@ where
     type Rejection = AppError;
     async fn from_request_parts(_parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         Ok(Self(ConnectionPool::from_ref(state).get_owned().await?))
+    }
+}
+
+impl FromRef<Ctx> for ConnectionPool {
+    fn from_ref(ctx: &Ctx) -> Self {
+        ctx.db.clone()
     }
 }

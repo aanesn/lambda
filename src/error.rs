@@ -3,12 +3,18 @@ use axum::{
     response::{IntoResponse, Response},
 };
 
-#[derive(Debug)]
-pub struct AppError(anyhow::Error);
+pub enum AppError {
+    Internal(anyhow::Error),
+    Unauthorized,
+}
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, self.0.to_string()).into_response()
+        match self {
+            AppError::Internal(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+            AppError::Unauthorized => (StatusCode::UNAUTHORIZED, "unauthorized".to_owned()),
+        }
+        .into_response()
     }
 }
 
@@ -17,6 +23,6 @@ where
     E: Into<anyhow::Error>,
 {
     fn from(err: E) -> Self {
-        Self(err.into())
+        Self::Internal(err.into())
     }
 }
