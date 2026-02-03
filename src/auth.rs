@@ -30,6 +30,7 @@ pub fn mount() -> Router<Ctx> {
         .route("/github", get(github))
         .route("/google/callback", get(google_callback))
         .route("/github/callback", get(github_callback))
+        .route("/logout", get(logout))
 }
 
 pub async fn google(
@@ -212,6 +213,18 @@ pub async fn github_callback(
     ))
 }
 
+pub async fn logout(
+    jar: CookieJar,
+    DatabaseConnection(mut conn): DatabaseConnection,
+    State(ctx): State<Ctx>,
+) -> anyhow::Result<impl IntoResponse, AppError> {
+    if let Some(session_id) = jar.get(SESSION).map(|c| c.value()) {
+        conn.del::<String, ()>(format!("session:{}", session_id))
+            .await?;
+    }
+    Ok((delete_cookie(SESSION, ctx.prod, jar), Redirect::to("/")))
+}
+
 fn set_cookie(
     name: &'static str,
     value: String,
@@ -229,6 +242,18 @@ fn set_cookie(
         cookie = cookie.domain(".lambda.new")
     }
     jar.add(cookie)
+}
+
+fn delete_cookie(name: &'static str, prod: bool, jar: CookieJar) -> CookieJar {
+    let mut cookie = Cookie::build(name)
+        .path("/")
+        .http_only(true)
+        .secure(prod)
+        .same_site(if prod { SameSite::None } else { SameSite::Lax });
+    if prod {
+        cookie = cookie.domain(".lambda.new")
+    }
+    jar.remove(cookie)
 }
 
 fn check_csrf_token(jar: &CookieJar, state: &str) -> Result<(), AppError> {
