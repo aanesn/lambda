@@ -2,6 +2,7 @@ use crate::db::ConnectionPool;
 use axum::{Router, routing::get};
 use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, RedirectUrl, TokenUrl};
 
+mod auth;
 mod db;
 mod error;
 
@@ -46,8 +47,8 @@ async fn main() -> anyhow::Result<()> {
     let github = oauth_client(
         std::env::var("GITHUB_CLIENT_ID")?,
         std::env::var("GITHUB_CLIENT_SECRET")?,
-        "https://accounts.google.com/o/oauth2/v2/auth".to_owned(),
-        "https://oauth2.googleapis.com/token".to_owned(),
+        "https://github.com/login/oauth/authorize".to_owned(),
+        "https://github.com/login/oauth/access_token".to_owned(),
         format!("{client_url}/auth/github/callback"),
     )?;
 
@@ -61,6 +62,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
+        .nest("/auth", auth::mount())
         .with_state(ctx);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
