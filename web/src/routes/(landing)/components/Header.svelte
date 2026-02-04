@@ -6,12 +6,10 @@
 	import * as Sheet from "$lib/components/sheet"
 
 	const navLinks = [
-		{ title: "Pricing", href: "##" },
+		{ title: "Pricing", href: "/" },
 		{ title: "Repository", href: "https://github.com/aanesn/lambda" },
 		{ title: "Feedback", href: "mailto:contact@lambda.new" }
 	]
-
-	const sheetLinks = [...navLinks, { title: "Log in", href: "##" }]
 </script>
 
 <header class="flex h-16 items-center justify-between lg:h-20">
@@ -37,7 +35,7 @@
 				{@html Logomark}
 			</div>
 			<div class="flex flex-col gap-y-1">
-				{#each sheetLinks as { title, href }}
+				{#each [...navLinks, { title: "Log in", href: "/" }] as { title, href }}
 					<Link {href} class="text-lg">{title}</Link>
 				{/each}
 			</div>
