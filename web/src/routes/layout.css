@@ -1,7 +1,23 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+	--font-geist: "Geist", sans-serif;
+}
+
+@font-face {
+	font-family: "Geist";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/fonts/Geist.woff2") format("woff2");
+}
 
 @layer base {
+	* {
+		@apply border-white/10;
+	}
 	body {
-		@apply bg-black text-white;
+		@apply bg-black font-geist text-white;
 	}
 }
