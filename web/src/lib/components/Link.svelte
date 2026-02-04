@@ -7,7 +7,8 @@
 		base: "transition-colors outline-none text-sm",
 		variants: {
 			intent: {
-				primary: "text-neutral-500 hover:text-white"
+				primary: "hover:text-white/80",
+				secondary: "text-neutral-500 hover:text-white"
 			}
 		}
 	})

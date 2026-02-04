@@ -18,10 +18,10 @@
 	</a>
 	<nav class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-x-8 lg:flex">
 		{#each navLinks as { title, href }}
-			<Link {href}>{title}</Link>
+			<Link intent="secondary" {href}>{title}</Link>
 		{/each}
 	</nav>
-	<Button class="hidden duration-300 lg:flex">Log in</Button>
+	<Button intent="secondary" class="hidden duration-300 lg:flex">Log in</Button>
 	<Sheet.Root>
 		<Sheet.Trigger>
 			{#snippet child({ props })}

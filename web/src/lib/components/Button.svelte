@@ -7,7 +7,8 @@
 		base: "inline-flex shrink-0 items-center justify-center gap-2 text-sm whitespace-nowrap transition-all outline-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
 		variants: {
 			intent: {
-				primary: "bg-neutral-900 hover:bg-neutral-800",
+				primary: "bg-white text-black hover:bg-white/80 shadow-xs font-medium",
+				secondary: "bg-neutral-900 hover:bg-neutral-800",
 				ghost: "hover:bg-neutral-900"
 			},
 			size: {
