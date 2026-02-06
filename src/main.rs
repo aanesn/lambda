@@ -8,6 +8,7 @@ use anyhow::Context;
 use axum::{
     Router,
     extract::Request,
+    http::{HeaderValue, Method},
     middleware::{self, Next},
     response::Response,
     routing::get,
@@ -15,6 +16,7 @@ use axum::{
 use axum_extra::extract::CookieJar;
 use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, RedirectUrl, TokenUrl};
 use redis::AsyncCommands;
+use tower_http::cors::CorsLayer;
 
 mod auth;
 mod db;
@@ -49,6 +51,10 @@ async fn main() -> anyhow::Result<()> {
         std::env::var("CLIENT_URL").unwrap_or_else(|_| "http://localhost:5173".to_owned());
     let api_url = std::env::var("API_URL").unwrap_or_else(|_| "http://localhost:8080".to_owned());
 
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET])
+        .allow_origin(client_url.parse::<HeaderValue>()?);
+
     let db = bb8::Pool::builder()
         .build(redis::Client::open(std::env::var("REDIS_URL")?)?)
         .await?;
@@ -70,7 +76,11 @@ async fn main() -> anyhow::Result<()> {
     )?;
 
     let reqwest = reqwest::Client::builder()
-        .user_agent(env!("CARGO_PKG_NAME"))
+        .user_agent(concat!(
+            env!("CARGO_PKG_NAME"),
+            "/",
+            env!("CARGO_PKG_VERSION"),
+        ))
         .build()?;
 
     let ctx = Ctx {
@@ -90,6 +100,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(|| async { "Hello, World!" }))
         .nest("/auth", auth::mount())
         .merge(protected)
+        .layer(cors)
         .with_state(ctx);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;

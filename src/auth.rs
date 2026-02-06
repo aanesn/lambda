@@ -135,7 +135,7 @@ pub async fn google_callback(
 
     Ok((
         set_cookie(SESSION, session_id, SESSION_MAX_AGE, ctx.prod, jar),
-        Redirect::to("/user"),
+        Redirect::to(&format!("{}/login", ctx.client_url)),
     ))
 }
 
@@ -209,7 +209,7 @@ pub async fn github_callback(
 
     Ok((
         set_cookie(SESSION, session_id, SESSION_MAX_AGE, ctx.prod, jar),
-        Redirect::to("/user"),
+        Redirect::to(&format!("{}/login", ctx.client_url)),
     ))
 }
 
