@@ -6,9 +6,9 @@
 	import * as Sheet from "$lib/components/sheet"
 
 	const navLinks = [
-		{ title: "Pricing", href: "/" },
-		{ title: "Repository", href: "https://github.com/aanesn/lambda" },
-		{ title: "Feedback", href: "mailto:contact@lambda.new" }
+		{ title: "Docs", href: "/" },
+		{ title: "Repo", href: "https://github.com/aanesn/lambda" },
+		{ title: "Contact", href: "mailto:contact@lambda.new" }
 	]
 </script>
 
