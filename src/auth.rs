@@ -222,7 +222,10 @@ pub async fn logout(
         conn.del::<String, ()>(format!("session:{}", session_id))
             .await?;
     }
-    Ok((delete_cookie(SESSION, ctx.prod, jar), Redirect::to("/")))
+    Ok((
+        delete_cookie(SESSION, ctx.prod, jar),
+        Redirect::to(&ctx.client_url),
+    ))
 }
 
 fn set_cookie(

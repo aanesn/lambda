@@ -53,7 +53,8 @@ async fn main() -> anyhow::Result<()> {
 
     let cors = CorsLayer::new()
         .allow_methods([Method::GET])
-        .allow_origin(client_url.parse::<HeaderValue>()?);
+        .allow_origin(client_url.parse::<HeaderValue>()?)
+        .allow_credentials(true);
 
     let db = bb8::Pool::builder()
         .build(redis::Client::open(std::env::var("REDIS_URL")?)?)

@@ -1,6 +1,7 @@
 use axum::{Extension, Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
+#[typeshare::typeshare]
 #[derive(Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: String,

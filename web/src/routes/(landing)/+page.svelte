@@ -18,7 +18,7 @@
 			Deploy Lambda functions in your favorite web framework, without wrestling the console.
 		</h2>
 		<div class="flex items-center gap-x-6">
-			<Button class="duration-300">Start now</Button>
+			<Button class="duration-300" href="/login">Start now</Button>
 			<Button intent="secondary" class="duration-300">Docs</Button>
 		</div>
 	</div>

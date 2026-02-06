@@ -21,7 +21,7 @@
 			<Link intent="secondary" {href}>{title}</Link>
 		{/each}
 	</nav>
-	<Button intent="secondary" class="hidden duration-300 lg:flex">Log in</Button>
+	<Button intent="secondary" class="hidden duration-300 lg:flex" href="/login">Log in</Button>
 	<Sheet.Root>
 		<Sheet.Trigger>
 			{#snippet child({ props })}
