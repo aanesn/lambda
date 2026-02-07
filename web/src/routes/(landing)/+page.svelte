@@ -15,7 +15,7 @@
 			Lambda is finally <br /> effortless
 		</h1>
 		<h2 class="max-w-lg text-center text-balance text-neutral-500 lg:text-lg">
-			Deploy Lambda functions in your favorite web framework without wrestling the console.
+			Deploy Lambda functions on your own AWS account without wrestling the console.
 		</h2>
 		<div class="flex items-center gap-x-6">
 			<Button class="duration-300" href="/login">Start now</Button>
