@@ -4,7 +4,7 @@
 	import { cva, cx } from "$lib/utils"
 
 	const linkVariants = cva({
-		base: "transition-colors outline-none text-sm",
+		base: "transition-colors outline-none",
 		variants: {
 			intent: {
 				primary: "hover:text-white/80",

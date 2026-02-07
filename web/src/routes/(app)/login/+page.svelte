@@ -51,7 +51,7 @@
 			</Button>
 		</Card.Content>
 		<Card.Footer class="flex justify-center">
-			<Link intent="secondary" href="/">Privacy & terms</Link>
+			<Link intent="secondary" href="/" class="text-sm">Privacy & terms</Link>
 		</Card.Footer>
 	</Card.Root>
 </div>

@@ -35,7 +35,7 @@
 				{@html Logomark}
 			</div>
 			<div class="flex flex-col gap-y-1">
-				{#each [...navLinks, { title: "Log in", href: "/" }] as { title, href }}
+				{#each [...navLinks, { title: "Log in", href: "/login" }] as { title, href }}
 					<Link {href} class="text-lg">{title}</Link>
 				{/each}
 			</div>
