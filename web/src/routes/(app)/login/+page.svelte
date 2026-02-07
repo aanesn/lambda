@@ -22,7 +22,7 @@
 </svelte:head>
 
 <div class="mx-auto mt-20 w-full max-w-xl px-6">
-	<div class="mb-5 ml-10">
+	<div class="mb-6 ml-12">
 		{@html Logomark}
 	</div>
 	<Card.Root class="rounded-4xl">
