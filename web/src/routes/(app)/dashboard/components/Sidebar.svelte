@@ -71,7 +71,9 @@
 								class="rounded-full group-data-[state=collapsed]:p-0!"
 							>
 								<Avatar.Root>
-									<Avatar.Image src={user?.avatar_url} alt="avatar" />
+									{#if user?.avatar_url}
+										<Avatar.Image src={user.avatar_url} alt="avatar" />
+									{/if}
 									<Avatar.Fallback>
 										{displayName[0].toUpperCase()}
 									</Avatar.Fallback>

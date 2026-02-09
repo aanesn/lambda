@@ -6,6 +6,6 @@
 </script>
 
 <Avatar.Fallback
-	class={cx("flex size-full items-center justify-center rounded-full bg-neutral-900", className)}
+	class={cx("flex size-full items-center justify-center rounded-full bg-neutral-800", className)}
 	{...restProps}
 />
