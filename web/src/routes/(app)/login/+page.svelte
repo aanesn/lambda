@@ -12,7 +12,7 @@
 	let { data }: { data: PageData } = $props()
 
 	$effect(() => {
-		data.user && goto("/dashboard", { replaceState: true })
+		data.user && goto("/dashboard/new-project", { replaceState: true })
 	})
 </script>
 

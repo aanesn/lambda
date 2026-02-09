@@ -135,7 +135,7 @@ pub async fn google_callback(
 
     Ok((
         set_cookie(SESSION, session_id, SESSION_MAX_AGE, ctx.prod, jar),
-        Redirect::to(&format!("{}/login", ctx.client_url)),
+        Redirect::to(&format!("{}/dashboard/new-project", ctx.client_url)),
     ))
 }
 
@@ -209,7 +209,7 @@ pub async fn github_callback(
 
     Ok((
         set_cookie(SESSION, session_id, SESSION_MAX_AGE, ctx.prod, jar),
-        Redirect::to(&format!("{}/login", ctx.client_url)),
+        Redirect::to(&format!("{}/dashboard/new-project", ctx.client_url)),
     ))
 }
 
@@ -219,7 +219,7 @@ pub async fn logout(
     State(ctx): State<Ctx>,
 ) -> anyhow::Result<impl IntoResponse, AppError> {
     if let Some(session_id) = jar.get(SESSION).map(|c| c.value()) {
-        conn.del::<String, ()>(format!("session:{}", session_id))
+        conn.del::<String, ()>(format!("session:{session_id}"))
             .await?;
     }
     Ok((
