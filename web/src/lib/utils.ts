@@ -9,7 +9,7 @@ export const { cva, cx } = defineConfig({
 	}
 })
 
-export const apiUrl = dev ? "http://localhost:8080" : "https://api.lambda.new/"
+export const apiUrl = dev ? "http://localhost:8080" : "https://api.lambda.new"
 
 const DEFAULT_MOBILE_BREAKPOINT = 768
 
