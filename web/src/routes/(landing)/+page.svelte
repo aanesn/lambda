@@ -17,7 +17,7 @@
 		<h2 class="max-w-lg text-center text-balance text-neutral-500 lg:text-lg">
 			Deploy Lambda functions in your favorite web framework without wrestling the console.
 		</h2>
-		<div class="flex items-center gap-x-6">
+		<div class="flex items-center gap-x-4">
 			<Button class="duration-300" href="/login">Start now</Button>
 			<Button intent="secondary" class="duration-300">Docs</Button>
 		</div>
