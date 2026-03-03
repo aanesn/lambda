@@ -15,7 +15,7 @@
 					"hover:bg-neutral-900 text-neutral-500 hover:text-white active:bg-neutral-900 active:text-white data-[active=true]:bg-neutral-900 data-[active=true]:text-white",
 				secondary: "",
 				outline:
-					"bg-neutral-950 hover:bg-neutral-900 shadow-[0_0_0_1px_rgba(255,255,255,0.1)]"
+					"border bg-neutral-900 hover:bg-neutral-800 group-data-[state=collapsed]:border-none"
 			},
 			size: {
 				md: "h-8 text-sm",
