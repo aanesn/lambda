@@ -1,6 +1,8 @@
 use axum::{Router, routing::get};
 use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, RedirectUrl, TokenUrl};
 
+mod auth;
+
 type BasicClient = oauth2::basic::BasicClient<
     EndpointSet,
     EndpointNotSet,
@@ -13,21 +15,23 @@ type BasicClient = oauth2::basic::BasicClient<
 struct Ctx {
     github: BasicClient,
     google: BasicClient,
+    prod: bool,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
 
-    let client_url =
-        std::env::var("CLIENT_URL").unwrap_or_else(|_| "http://localhost:5173".to_owned());
+    let api_url = std::env::var("API_URL").unwrap_or_else(|_| "http://127.0.0.1:8080".to_owned());
+    let prod =
+        std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_owned()) == "production";
 
     let github = oauth_client(
         std::env::var("GITHUB_CLIENT_ID")?,
         std::env::var("GITHUB_CLIENT_SECRET")?,
         "https://github.com/login/oauth/authorize".to_owned(),
         "https://github.com/login/oauth/access_token".to_owned(),
-        format!("{client_url}/auth/github/callback"),
+        format!("{api_url}/auth/github/callback"),
     )?;
 
     let google = oauth_client(
@@ -35,13 +39,18 @@ async fn main() -> anyhow::Result<()> {
         std::env::var("GOOGLE_CLIENT_SECRET")?,
         "https://accounts.google.com/o/oauth2/v2/auth".to_owned(),
         "https://oauth2.googleapis.com/token".to_owned(),
-        format!("{client_url}/auth/google/callback"),
+        format!("{api_url}/auth/google/callback"),
     )?;
 
-    let ctx = Ctx { github, google };
+    let ctx = Ctx {
+        github,
+        google,
+        prod,
+    };
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
+        .nest("/auth", auth::mount())
         .with_state(ctx);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
