@@ -2,6 +2,7 @@ use axum::{Router, routing::get};
 use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, RedirectUrl, TokenUrl};
 
 mod auth;
+mod error;
 
 type BasicClient = oauth2::basic::BasicClient<
     EndpointSet,

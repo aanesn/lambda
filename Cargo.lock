@@ -590,6 +590,7 @@ dependencies = [
  "axum-extra",
  "dotenvy",
  "oauth2",
+ "serde",
  "time",
  "tokio",
 ]

@@ -1,7 +1,8 @@
-use crate::Ctx;
+use crate::{Ctx, error::AppError};
+use anyhow::Context;
 use axum::{
     Router,
-    extract::State,
+    extract::{Query, State},
     response::{IntoResponse, Redirect},
     routing::get,
 };
@@ -10,6 +11,7 @@ use axum_extra::extract::{
     cookie::{Cookie, SameSite},
 };
 use oauth2::{CsrfToken, Scope};
+use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
 
@@ -73,10 +75,35 @@ fn set_cookie(
     jar.add(cookie)
 }
 
-async fn github_callback() -> impl IntoResponse {
-    "test".to_string()
+#[derive(Deserialize)]
+struct CallbackParams {
+    code: String,
+    state: String,
 }
 
-async fn google_callback() -> impl IntoResponse {
-    "test".to_string()
+async fn github_callback(
+    jar: CookieJar,
+    Query(params): Query<CallbackParams>,
+) -> anyhow::Result<impl IntoResponse, AppError> {
+    check_csrf_token(&jar, &params.state)?;
+    Ok("test".to_string())
+}
+
+async fn google_callback(
+    jar: CookieJar,
+    Query(params): Query<CallbackParams>,
+) -> anyhow::Result<impl IntoResponse, AppError> {
+    check_csrf_token(&jar, &params.state)?;
+    Ok("test".to_string())
+}
+
+fn check_csrf_token(jar: &CookieJar, state: &str) -> anyhow::Result<()> {
+    let stored_state = jar
+        .get(CSRF_TOKEN)
+        .context("failed to get csrf token")?
+        .value();
+    if stored_state != state {
+        anyhow::bail!("csrf token mismatch")
+    }
+    Ok(())
 }
