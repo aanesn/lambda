@@ -2,6 +2,7 @@ use axum::{Router, routing::get};
 use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, RedirectUrl, TokenUrl};
 
 mod auth;
+mod database;
 mod error;
 
 type BasicClient = oauth2::basic::BasicClient<
@@ -18,6 +19,7 @@ struct Ctx {
     google: BasicClient,
     prod: bool,
     reqwest: reqwest::Client,
+    db: database::ConnectionPool,
 }
 
 #[tokio::main]
@@ -48,11 +50,16 @@ async fn main() -> anyhow::Result<()> {
         .user_agent(env!("CARGO_PKG_NAME"))
         .build()?;
 
+    let db = bb8::Pool::builder()
+        .build(redis::Client::open(std::env::var("REDIS_URL")?)?)
+        .await?;
+
     let ctx = Ctx {
         github,
         google,
         prod,
         reqwest,
+        db,
     };
 
     let app = Router::new()
