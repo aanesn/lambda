@@ -17,6 +17,7 @@ struct Ctx {
     github: BasicClient,
     google: BasicClient,
     prod: bool,
+    reqwest: reqwest::Client,
 }
 
 #[tokio::main]
@@ -43,10 +44,13 @@ async fn main() -> anyhow::Result<()> {
         format!("{api_url}/auth/google/callback"),
     )?;
 
+    let reqwest = reqwest::Client::new();
+
     let ctx = Ctx {
         github,
         google,
         prod,
+        reqwest,
     };
 
     let app = Router::new()

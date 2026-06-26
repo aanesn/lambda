@@ -10,7 +10,7 @@ use axum_extra::extract::{
     CookieJar,
     cookie::{Cookie, SameSite},
 };
-use oauth2::{CsrfToken, Scope};
+use oauth2::{AuthorizationCode, CsrfToken, Scope};
 use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
@@ -84,16 +84,34 @@ struct CallbackParams {
 async fn github_callback(
     jar: CookieJar,
     Query(params): Query<CallbackParams>,
+    State(ctx): State<Ctx>,
 ) -> anyhow::Result<impl IntoResponse, AppError> {
     check_csrf_token(&jar, &params.state)?;
+
+    let token = ctx
+        .github
+        .exchange_code(AuthorizationCode::new(params.code))
+        .request_async(&ctx.reqwest)
+        .await
+        .context("failed to get github token")?;
+
     Ok("test".to_string())
 }
 
 async fn google_callback(
     jar: CookieJar,
     Query(params): Query<CallbackParams>,
+    State(ctx): State<Ctx>,
 ) -> anyhow::Result<impl IntoResponse, AppError> {
     check_csrf_token(&jar, &params.state)?;
+
+    let token = ctx
+        .google
+        .exchange_code(AuthorizationCode::new(params.code))
+        .request_async(&ctx.reqwest)
+        .await
+        .context("failed to get google token")?;
+
     Ok("test".to_string())
 }
 
