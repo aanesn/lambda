@@ -44,7 +44,9 @@ async fn main() -> anyhow::Result<()> {
         format!("{api_url}/auth/google/callback"),
     )?;
 
-    let reqwest = reqwest::Client::new();
+    let reqwest = reqwest::Client::builder()
+        .user_agent(env!("CARGO_PKG_NAME"))
+        .build()?;
 
     let ctx = Ctx {
         github,

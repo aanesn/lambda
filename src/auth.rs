@@ -10,7 +10,7 @@ use axum_extra::extract::{
     CookieJar,
     cookie::{Cookie, SameSite},
 };
-use oauth2::{AuthorizationCode, CsrfToken, Scope};
+use oauth2::{AuthorizationCode, CsrfToken, Scope, TokenResponse};
 use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
@@ -81,6 +81,18 @@ struct CallbackParams {
     state: String,
 }
 
+#[derive(Deserialize)]
+struct GithubUser {
+    id: i64,
+}
+
+#[derive(Deserialize)]
+struct GithubEmail {
+    email: String,
+    verified: bool,
+    primary: bool,
+}
+
 async fn github_callback(
     jar: CookieJar,
     Query(params): Query<CallbackParams>,
@@ -95,7 +107,40 @@ async fn github_callback(
         .await
         .context("failed to get github token")?;
 
+    let user = ctx
+        .reqwest
+        .get("https://api.github.com/user")
+        .bearer_auth(token.access_token().secret())
+        .send()
+        .await
+        .context("failed to get github user")?
+        .json::<GithubUser>()
+        .await
+        .context("failed to parse github user")?;
+
+    let email = ctx
+        .reqwest
+        .get("https://api.github.com/user/emails")
+        .bearer_auth(token.access_token().secret())
+        .send()
+        .await
+        .context("failed to get github emails")?
+        .json::<Vec<GithubEmail>>()
+        .await
+        .context("failed to parse github emails")?
+        .into_iter()
+        .find(|e| e.verified && e.primary)
+        .context("missing verified and primary github email")?
+        .email;
+
     Ok("test".to_string())
+}
+
+#[derive(Deserialize)]
+struct GoogleUser {
+    sub: String,
+    email: String,
+    email_verified: bool,
 }
 
 async fn google_callback(
@@ -111,6 +156,17 @@ async fn google_callback(
         .request_async(&ctx.reqwest)
         .await
         .context("failed to get google token")?;
+
+    let user = ctx
+        .reqwest
+        .get("https://openidconnect.googleapis.com/v1/userinfo")
+        .bearer_auth(token.access_token().secret())
+        .send()
+        .await
+        .context("failed to get google user")?
+        .json::<GoogleUser>()
+        .await
+        .context("failed to parse google user")?;
 
     Ok("test".to_string())
 }
