@@ -168,6 +168,10 @@ async fn google_callback(
         .await
         .context("failed to parse google user")?;
 
+    if !user.email_verified {
+        return Err(anyhow::anyhow!("missing verified google email").into());
+    }
+
     Ok("test".to_string())
 }
 
