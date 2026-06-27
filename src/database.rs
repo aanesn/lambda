@@ -1,12 +1,12 @@
-use crate::error::AppError;
+use crate::{Ctx, error::AppError};
 use axum::{
     extract::{FromRef, FromRequestParts},
     http::request::Parts,
 };
 
 pub type ConnectionPool = bb8::Pool<redis::Client>;
-
-pub struct DatabaseConnection(bb8::PooledConnection<'static, redis::Client>);
+pub type PooledConnection = bb8::PooledConnection<'static, redis::Client>;
+pub struct DatabaseConnection(pub PooledConnection);
 
 impl<S> FromRequestParts<S> for DatabaseConnection
 where
@@ -18,5 +18,11 @@ where
         let pool = ConnectionPool::from_ref(state);
         let conn = pool.get_owned().await?;
         Ok(Self(conn))
+    }
+}
+
+impl FromRef<Ctx> for ConnectionPool {
+    fn from_ref(ctx: &Ctx) -> Self {
+        ctx.db.clone()
     }
 }

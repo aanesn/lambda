@@ -1,4 +1,9 @@
-use crate::{Ctx, error::AppError};
+use crate::{
+    Ctx,
+    database::{DatabaseConnection, PooledConnection},
+    error::AppError,
+    user::User,
+};
 use anyhow::Context;
 use axum::{
     Router,
@@ -11,6 +16,7 @@ use axum_extra::extract::{
     cookie::{Cookie, SameSite},
 };
 use oauth2::{AuthorizationCode, CsrfToken, Scope, TokenResponse};
+use redis::AsyncCommands;
 use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
@@ -97,6 +103,7 @@ async fn github_callback(
     jar: CookieJar,
     Query(params): Query<CallbackParams>,
     State(ctx): State<Ctx>,
+    DatabaseConnection(mut conn): DatabaseConnection,
 ) -> anyhow::Result<impl IntoResponse, AppError> {
     check_csrf_token(&jar, &params.state)?;
 
@@ -133,6 +140,8 @@ async fn github_callback(
         .context("missing verified and primary github email")?
         .email;
 
+    let user_id = upsert_user(&mut conn, format!("provider:github:{}", user.id), email).await?;
+
     Ok("test".to_string())
 }
 
@@ -147,6 +156,7 @@ async fn google_callback(
     jar: CookieJar,
     Query(params): Query<CallbackParams>,
     State(ctx): State<Ctx>,
+    DatabaseConnection(mut conn): DatabaseConnection,
 ) -> anyhow::Result<impl IntoResponse, AppError> {
     check_csrf_token(&jar, &params.state)?;
 
@@ -172,6 +182,13 @@ async fn google_callback(
         return Err(anyhow::anyhow!("missing verified google email").into());
     }
 
+    let user_id = upsert_user(
+        &mut conn,
+        format!("provider:google:{}", user.sub),
+        user.email,
+    )
+    .await?;
+
     Ok("test".to_string())
 }
 
@@ -184,4 +201,25 @@ fn check_csrf_token(jar: &CookieJar, state: &str) -> anyhow::Result<()> {
         anyhow::bail!("csrf token mismatch")
     }
     Ok(())
+}
+
+async fn upsert_user(
+    conn: &mut PooledConnection,
+    provider_key: String,
+    email: String,
+) -> anyhow::Result<String> {
+    let exists: Option<String> = conn.get(&provider_key).await?;
+    let id = exists
+        .clone()
+        .unwrap_or_else(|| uuid::Uuid::now_v7().to_string());
+    let user = User {
+        id: id.clone(),
+        email,
+    };
+    conn.set::<_, _, ()>(format!("user:{id}"), serde_json::to_string(&user)?)
+        .await?;
+    if exists.is_none() {
+        conn.set::<_, _, ()>(provider_key, &id).await?;
+    }
+    Ok(id)
 }

@@ -4,6 +4,7 @@ use oauth2::{AuthUrl, ClientId, ClientSecret, EndpointNotSet, EndpointSet, Redir
 mod auth;
 mod database;
 mod error;
+mod user;
 
 type BasicClient = oauth2::basic::BasicClient<
     EndpointSet,
