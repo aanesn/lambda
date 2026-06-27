@@ -20,6 +20,8 @@ use redis::AsyncCommands;
 use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
+const SESSION: &str = "session";
+const SESSION_MAX_AGE: u64 = 60 * 60 * 24 * 7;
 
 pub fn mount() -> Router<Ctx> {
     Router::new()
@@ -141,8 +143,18 @@ async fn github_callback(
         .email;
 
     let user_id = upsert_user(&mut conn, format!("provider:github:{}", user.id), email).await?;
+    let session_id = create_session(&mut conn, &user_id).await?;
 
-    Ok("test".to_string())
+    Ok((
+        set_cookie(
+            SESSION,
+            session_id,
+            ctx.prod,
+            time::Duration::seconds(SESSION_MAX_AGE as i64),
+            jar,
+        ),
+        Redirect::to("/"),
+    ))
 }
 
 #[derive(Deserialize)]
@@ -177,7 +189,6 @@ async fn google_callback(
         .json::<GoogleUser>()
         .await
         .context("failed to parse google user")?;
-
     if !user.email_verified {
         return Err(anyhow::anyhow!("missing verified google email").into());
     }
@@ -188,8 +199,18 @@ async fn google_callback(
         user.email,
     )
     .await?;
+    let session_id = create_session(&mut conn, &user_id).await?;
 
-    Ok("test".to_string())
+    Ok((
+        set_cookie(
+            SESSION,
+            session_id,
+            ctx.prod,
+            time::Duration::seconds(SESSION_MAX_AGE as i64),
+            jar,
+        ),
+        Redirect::to("/"),
+    ))
 }
 
 fn check_csrf_token(jar: &CookieJar, state: &str) -> anyhow::Result<()> {
@@ -221,5 +242,12 @@ async fn upsert_user(
     if exists.is_none() {
         conn.set::<_, _, ()>(provider_key, &id).await?;
     }
+    Ok(id)
+}
+
+async fn create_session(conn: &mut PooledConnection, user_id: &str) -> anyhow::Result<String> {
+    let id = uuid::Uuid::new_v4().to_string();
+    conn.set_ex::<_, _, ()>(format!("session:{id}"), user_id, SESSION_MAX_AGE)
+        .await?;
     Ok(id)
 }

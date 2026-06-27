@@ -1055,6 +1055,7 @@ dependencies = [
  "tokio-rustls",
  "tokio-util",
  "url",
+ "webpki-roots",
  "xxhash-rust",
 ]
 
