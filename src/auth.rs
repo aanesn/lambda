@@ -9,7 +9,7 @@ use axum::{
     Router,
     extract::{Query, State},
     response::{IntoResponse, Redirect},
-    routing::get,
+    routing::{get, post},
 };
 use axum_extra::extract::{
     CookieJar,
@@ -29,6 +29,7 @@ pub fn mount() -> Router<Ctx> {
         .route("/google", get(google))
         .route("/github/callback", get(github_callback))
         .route("/google/callback", get(google_callback))
+        .route("/logout", post(logout))
 }
 
 async fn github(State(ctx): State<Ctx>, jar: CookieJar) -> impl IntoResponse {
@@ -257,4 +258,16 @@ async fn create_session(conn: &mut PooledConnection, user_id: &str) -> anyhow::R
         .await
         .context("failed to set session")?;
     Ok(id)
+}
+
+async fn logout(
+    jar: CookieJar,
+    DatabaseConnection(mut conn): DatabaseConnection,
+) -> anyhow::Result<impl IntoResponse, AppError> {
+    if let Some(session) = jar.get(SESSION) {
+        conn.del::<_, ()>(format!("session:{}", session.value()))
+            .await
+            .context("failed to delete session")?;
+    }
+    Ok((jar.remove(Cookie::from(SESSION)), Redirect::to("/")))
 }
