@@ -20,7 +20,7 @@ use redis::AsyncCommands;
 use serde::Deserialize;
 
 const CSRF_TOKEN: &str = "csrf_token";
-const SESSION: &str = "session";
+pub const SESSION: &str = "session";
 const SESSION_MAX_AGE: u64 = 60 * 60 * 24 * 7;
 
 pub fn mount() -> Router<Ctx> {
@@ -136,7 +136,7 @@ async fn github_callback(
         .context("failed to get github emails")?
         .json::<Vec<GithubEmail>>()
         .await
-        .context("failed to parse github emails")?
+        .context("failed to deserialize github emails")?
         .into_iter()
         .find(|e| e.verified && e.primary)
         .context("missing verified and primary github email")?
@@ -188,7 +188,7 @@ async fn google_callback(
         .context("failed to get google user")?
         .json::<GoogleUser>()
         .await
-        .context("failed to parse google user")?;
+        .context("failed to deserialize google user")?;
     if !user.email_verified {
         return Err(anyhow::anyhow!("missing verified google email").into());
     }
@@ -214,10 +214,7 @@ async fn google_callback(
 }
 
 fn check_csrf_token(jar: &CookieJar, state: &str) -> anyhow::Result<()> {
-    let stored_state = jar
-        .get(CSRF_TOKEN)
-        .context("failed to get csrf token")?
-        .value();
+    let stored_state = jar.get(CSRF_TOKEN).context("missing csrf token")?.value();
     if stored_state != state {
         anyhow::bail!("csrf token mismatch")
     }
@@ -229,18 +226,27 @@ async fn upsert_user(
     provider_key: String,
     email: String,
 ) -> anyhow::Result<String> {
-    let exists: Option<String> = conn.get(&provider_key).await?;
-    let id = exists
+    let by_provider: Option<String> = conn
+        .get(&provider_key)
+        .await
+        .context("failed to get user id from provider")?;
+    let id = by_provider
         .clone()
         .unwrap_or_else(|| uuid::Uuid::now_v7().to_string());
     let user = User {
         id: id.clone(),
         email,
     };
-    conn.set::<_, _, ()>(format!("user:{id}"), serde_json::to_string(&user)?)
-        .await?;
-    if exists.is_none() {
-        conn.set::<_, _, ()>(provider_key, &id).await?;
+    conn.set::<_, _, ()>(
+        format!("user:{id}"),
+        serde_json::to_string(&user).context("failed to serialize user")?,
+    )
+    .await
+    .context("failed to set user")?;
+    if by_provider.is_none() {
+        conn.set::<_, _, ()>(provider_key, &id)
+            .await
+            .context("failed to set provider")?;
     }
     Ok(id)
 }
@@ -248,6 +254,7 @@ async fn upsert_user(
 async fn create_session(conn: &mut PooledConnection, user_id: &str) -> anyhow::Result<String> {
     let id = uuid::Uuid::new_v4().to_string();
     conn.set_ex::<_, _, ()>(format!("session:{id}"), user_id, SESSION_MAX_AGE)
-        .await?;
+        .await
+        .context("failed to set session")?;
     Ok(id)
 }
