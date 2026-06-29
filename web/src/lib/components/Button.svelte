@@ -4,7 +4,7 @@
 	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements"
 
 	const button = cva({
-		base: "inline-flex shrink-0 items-center justify-center rounded-xl text-sm whitespace-nowrap transition-all select-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+		base: "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-xl text-sm whitespace-nowrap transition-all select-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
 		variants: {
 			intent: {
 				primary: "bg-white text-black hover:bg-white/80"
