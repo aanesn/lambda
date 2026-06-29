@@ -9,11 +9,11 @@
 	]
 </script>
 
-<header class="flex items-center justify-between h-16 relative">
+<header class="relative flex h-16 items-center justify-between">
 	<a href="/">
 		{@html Logomark}
 	</a>
-	<nav class="hidden lg:flex items-center gap-x-8 absolute left-1/2 -translate-x-1/2">
+	<nav class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-x-8 lg:flex">
 		{#each navLinks as { title, href }}
 			<Link {href}>{title}</Link>
 		{/each}
