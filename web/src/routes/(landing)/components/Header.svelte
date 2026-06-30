@@ -6,6 +6,7 @@
 	import * as DropdownMenu from "$lib/components/dropdown-menu"
 
 	const navLinks = [
+		{ title: "pricing", href: "/" },
 		{ title: "repo", href: "https://github.com/aanesn/lambda" },
 		{ title: "contact", href: "mailto:contact@lambda.new" }
 	]
