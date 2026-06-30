@@ -14,5 +14,8 @@ export default defineConfig({
 			adapter: adapter(),
 			paths: { relative: false }
 		})
-	]
+	],
+	ssr: {
+		noExternal: ["bits-ui", "svelte-toolbelt", "runed"]
+	}
 })
