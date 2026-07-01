@@ -10,7 +10,9 @@
 
 <div class="py-40">
 	<div class="flex flex-col items-center justify-center gap-y-6">
-		<h1 class="text-center text-4xl md:text-5xl lg:text-6xl font-manrope font-semibold">
+		<h1
+			class="text-center text-4xl md:text-5xl lg:text-6xl font-manrope font-semibold tracking-tight"
+		>
 			aws lambda<br /> without the aws.
 		</h1>
 		<h2 class="text-center text-neutral-400 text-balance max-w-sm lg:text-lg">
